@@ -2,6 +2,7 @@ package indumatics_plantapintura;
 
 import indumatics_plantapintura.data.clases.Color;
 import indumatics_plantapintura.data.PedidosData;
+import indumatics_plantapintura.data.clases.Cliente;
 import java.util.Set;
 
 
@@ -30,8 +31,8 @@ public class Indumatics_PlantaPintura {
 //        }
 //
 //        System.out.println("Registros encontrados =" + x);
-        Set<Color> l = PedidosData.getColoresPedidos();
-        for (Color color : l) {
+        Set<Cliente> l = PedidosData.getClientesPediso();
+        for (Cliente color : l) {
             System.out.println(color);
             
             
