@@ -94,7 +94,7 @@ public class Color {
 
     @Override
     public String toString() {
-        return Integer.toString(id);
+        return Integer.toString(id)+ " - " + color;
     }
     
     

@@ -27,7 +27,7 @@ public class PedidosData {
             String sql;
             sql = "SELECT DISTINCT (CLIENTES_DETALLE_REMITO.COLOR)"
                     + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO "
-                    + "ON CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO"
+                    + "ON CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO "
                     + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or "
                     + "(CLIENTES_REMITOS.TIPODOC)=4) AND "
                     + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
@@ -45,14 +45,14 @@ public class PedidosData {
         return l;
     }
 
-    public static Set<Cliente> getClientesPediso(){
+    public static Set<Cliente> getClientesPedidos() {
         Set<Cliente> l = new HashSet<>();
         try {
             Statement st = con.createStatement();
             String sql;
-            sql = "SELECT DISTINCT (CLIENTES_REMITOS.IDCLIENTE) AS Expr1 " 
+            sql = "SELECT DISTINCT (CLIENTES_REMITOS.IDCLIENTE) AS Expr1 "
                     + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO ON "
-                    + "CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO " 
+                    + "CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO "
                     + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or (CLIENTES_REMITOS.TIPODOC)=4) AND "
                     + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
                     + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False));";
@@ -68,5 +68,60 @@ public class PedidosData {
         }
         return l;
     }
-    
+
+    public static Set<Cliente> getClientesPedidosColor(Color color) {
+        Set<Cliente> l = new HashSet<>();
+        try {
+            Statement st = con.createStatement();
+            String sql;
+            sql = "SELECT DISTINCT (CLIENTES_REMITOS.IDCLIENTE) AS Expr1 "
+                    + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO ON "
+                    + "CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO "
+                    + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or (CLIENTES_REMITOS.TIPODOC)=4) AND "
+                    + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
+                    + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False) AND (CLIENTES_DETALLE_REMITO.COLOR = "
+                    + Integer.toString(color.getId()) + "));";
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Cliente cliente = clienteDP.getOne(rs.getInt(1));
+                if (cliente != null) {
+                    l.add(cliente);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PedidosData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return l;
+    }
+
+    public static Set<Cliente> getClientesPedidosColores(Set<Color> colores) {
+        Set<Cliente> l = new HashSet<>();
+        try {
+            Statement st = con.createStatement();
+            String sql;
+            sql = "SELECT DISTINCT (CLIENTES_REMITOS.IDCLIENTE) AS Expr1 "
+                    + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO ON "
+                    + "CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO "
+                    + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or (CLIENTES_REMITOS.TIPODOC)=4) AND "
+                    + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
+                    + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False) AND ( ";
+            for (Color color : colores) {
+                sql = sql + "(CLIENTES_DETALLE_REMITO.COLOR = "
+                        + Integer.toString(color.getId()) + ") OR ";
+            }
+            sql = sql.substring(0, sql.length() - 3);
+            sql = sql + "));";
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                Cliente cliente = clienteDP.getOne(rs.getInt(1));
+                if (cliente != null) {
+                    l.add(cliente);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(PedidosData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return l;
+    }
+
 }
