@@ -26,7 +26,7 @@ public class RemitoDP {
                 res = DbToObj(rs);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ClienteDP.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RemitoDP.class.getName()).log(Level.SEVERE, null, ex);
         }
         return res;
     }
@@ -41,7 +41,7 @@ public class RemitoDP {
                 res.add(DbToObj(rs));
             }
         } catch (SQLException ex) {
-            Logger.getLogger(ClienteDP.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RemitoDP.class.getName()).log(Level.SEVERE, null, ex);
         }
         return res;
     }

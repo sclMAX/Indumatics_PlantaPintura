@@ -140,6 +140,11 @@ public class RemitoDetalle {
     public void setComentarios(String comentarios) {
         this.comentarios = comentarios;
     }
+
+    @Override
+    public String toString() {
+        return "RemitoDetalle{" + "id=" + id + ", idremito=" + idremito + ", cantidad=" + cantidad + ", idperfil=" + idperfil + ", largo=" + largo + ", color=" + color + ", unidades=" + unidades + ", precio=" + precio + ", descuento=" + descuento + ", procesado=" + procesado + ", rstock=" + rstock + ", embalado=" + embalado + ", act_stock=" + act_stock + ", comentarios=" + comentarios + '}';
+    }
     
     
     

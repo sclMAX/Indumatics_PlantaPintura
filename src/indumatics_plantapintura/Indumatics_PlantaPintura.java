@@ -4,8 +4,10 @@ import indumatics_plantapintura.data.clases.Color;
 import indumatics_plantapintura.data.PedidosData;
 import indumatics_plantapintura.data.clases.Cliente;
 import indumatics_plantapintura.data.clases.Remito;
+import indumatics_plantapintura.data.clases.RemitoDetalle;
+import indumatics_plantapintura.data.providers.PerfilDP;
 import indumatics_plantapintura.data.providers.RemitoDP;
-import java.util.HashSet;
+import indumatics_plantapintura.data.providers.RemitoDetalleDP;
 import java.util.Set;
 
 public class Indumatics_PlantaPintura {
@@ -15,24 +17,6 @@ public class Indumatics_PlantaPintura {
      */
     public static void main(String[] args) {
 
-//        Connection data = AccessConector.getInstance();
-//        Statement st = data.createStatement();
-//
-//        ResultSet rs = st.executeQuery("SELECT * FROM CLIENTES_DETALLE_REMITO");
-//        int x = 0;
-//        ResultSetMetaData md = rs.getMetaData();
-//        int col = md.getColumnCount();
-//        while (rs.next()) {
-//            String res = md.getColumnName(1) + ":" + rs.getString(1);
-//
-//            for (int i = 2; i < col; i++) {
-//                res = res + " | " + md.getColumnName(i) + ":" + rs.getString(i);
-//            }
-//            System.out.println(res);
-//            x++;
-//        }
-//
-//        System.out.println("Registros encontrados =" + x);
         Set<Color> colores = PedidosData.getColoresPedidos();
         for (Color color : colores) {
             System.out.println("\n" + color);
@@ -58,6 +42,12 @@ public class Indumatics_PlantaPintura {
         Set<Remito> remitos = new RemitoDP().getAll();
         for (Remito remito : remitos) {
             System.out.println("\n\t" + remito);
+            Set<RemitoDetalle> detalles = new RemitoDetalleDP().getAllRemito(remito);
+            for (RemitoDetalle detalle : detalles){
+                System.out.println("\n\t\t" + detalle);
+                 System.out.println("\n\t\t\t" + new PerfilDP().getOne(detalle.getIdperfil()));
+                
+            }
 
         }
 
