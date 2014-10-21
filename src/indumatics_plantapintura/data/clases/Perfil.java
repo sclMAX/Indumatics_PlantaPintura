@@ -1,6 +1,8 @@
 package indumatics_plantapintura.data.clases;
 
+import indumatics_plantapintura.data.providers.StockDP;
 import java.sql.Date;
+import java.sql.SQLException;
 
 public class Perfil {
 
@@ -219,6 +221,6 @@ public class Perfil {
 
     @Override
     public String toString() {
-        return "Perfil{" + "idperf=" + idperf + ", codproveedor=" + codproveedor + ", descripcion=" + descripcion + ", largo=" + largo + ", pxm=" + pxm + ", bxp=" + bxp + ", image=" + image + ", idproveedor=" + idproveedor + ", adicional=" + adicional + ", preciocompra=" + preciocompra + ", utilidad=" + utilidad + ", precioventa=" + precioventa + ", disponible=" + disponible + ", idlinea=" + idlinea + ", sel=" + sel + ", aux1=" + aux1 + ", aux2=" + aux2 + ", fua=" + fua + ", act_stock=" + act_stock + ", mpp=" + mpp + ", idlista=" + idlista + ", rubro=" + rubro + '}';
+        return idperf;
     }
 }

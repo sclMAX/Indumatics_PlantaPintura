@@ -1,51 +1,34 @@
 package indumatics_plantapintura.data.providers;
 
-import indumatics_plantapintura.data.AccessConector;
 import indumatics_plantapintura.data.clases.Perfil;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PerfilDP {
 
-    final static Connection con = AccessConector.getInstance();
-
-    public Set<Perfil> getAll() {
+    public static Set<Perfil> getAll() throws SQLException {
         Set<Perfil> res = new HashSet<>();
-        try {
-            Statement st = con.createStatement();
-            String sql = "SELECT * FROM PERFILES ";
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
-                res.add(DbToObj(rs));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(PerfilDP.class.getName()).log(Level.SEVERE, null, ex);
+        String sql = "SELECT * FROM PERFILES ";
+        ResultSet rs = ComunDP.getData(sql);
+        while (rs.next()) {
+            res.add(DbToObj(rs));
+        }
+        return res;
+    }
+
+    public static Perfil getOne(String id) throws SQLException {
+        Perfil res = null;
+        String sql = "SELECT * FROM PERFILES WHERE PERFILES.IDPERF =  '" + id + "'";
+        ResultSet rs = ComunDP.getData(sql);
+        while (rs.next()) {
+            res = DbToObj(rs);
         }
         return res;
     }
     
-    public Perfil getOne(String id){
-        Perfil res = null;
-        try {
-            Statement st = con.createStatement();
-            String sql = "SELECT * FROM PERFILES WHERE PERFILES.IDPERF =  '" + id+"'";
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
-                res = DbToObj(rs);
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(PerfilDP.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return res;
-    }
-
-    private Perfil DbToObj(ResultSet rs) throws SQLException {
+    private static Perfil DbToObj(ResultSet rs) throws SQLException {
         Perfil res = new Perfil();
         res.setIdperf(rs.getString("IDPERF"));
         res.setCodproveedor(rs.getString("CODPROVEEDOR"));

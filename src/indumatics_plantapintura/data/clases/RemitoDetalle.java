@@ -1,5 +1,11 @@
 package indumatics_plantapintura.data.clases;
 
+import indumatics_plantapintura.data.providers.ColorDP;
+import indumatics_plantapintura.data.providers.PerfilDP;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class RemitoDetalle {
     
     private int id;
@@ -16,6 +22,8 @@ public class RemitoDetalle {
     private boolean embalado;
     private boolean act_stock;
     private String comentarios;
+    private Perfil perfil;
+    private Color colorObj;
 
     public RemitoDetalle() {
     }
@@ -26,7 +34,7 @@ public class RemitoDetalle {
         this.cantidad = cantidad;
         this.idperfil = idperfil;
         this.largo = largo;
-        this.color = color;
+        this.setColor(color);
     }
 
     public int getId() {
@@ -59,6 +67,11 @@ public class RemitoDetalle {
 
     public void setIdperfil(String idperfil) {
         this.idperfil = idperfil;
+        try {
+            this.perfil = PerfilDP.getOne(idperfil);
+        } catch (SQLException ex) {
+            Logger.getLogger(RemitoDetalle.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public int getLargo() {
@@ -75,6 +88,11 @@ public class RemitoDetalle {
 
     public void setColor(int color) {
         this.color = color;
+        try {
+            this.colorObj = ColorDP.getOne(color);
+        } catch (SQLException ex) {
+            Logger.getLogger(RemitoDetalle.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public double getUnidades() {
@@ -140,10 +158,26 @@ public class RemitoDetalle {
     public void setComentarios(String comentarios) {
         this.comentarios = comentarios;
     }
+    
+    public Perfil getPerfil(){
+        return this.perfil;
+    }
+    
+    public void setPerfil(Perfil perfil){
+        this.perfil = perfil;
+    }
+    
+    public Color getColorObj(){
+        return colorObj;
+    }
+    
+    public void setColorObj(Color color){
+        this.colorObj = color;
+    }
 
     @Override
     public String toString() {
-        return "RemitoDetalle{" + "id=" + id + ", idremito=" + idremito + ", cantidad=" + cantidad + ", idperfil=" + idperfil + ", largo=" + largo + ", color=" + color + ", unidades=" + unidades + ", precio=" + precio + ", descuento=" + descuento + ", procesado=" + procesado + ", rstock=" + rstock + ", embalado=" + embalado + ", act_stock=" + act_stock + ", comentarios=" + comentarios + '}';
+        return Integer.toString(cantidad);
     }
     
     

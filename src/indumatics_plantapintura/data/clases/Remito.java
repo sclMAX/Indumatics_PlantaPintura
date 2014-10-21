@@ -1,9 +1,17 @@
 package indumatics_plantapintura.data.clases;
 
+import indumatics_plantapintura.data.providers.ClienteDP;
+import indumatics_plantapintura.data.providers.RemitoDetalleDP;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Remito {
-    
+
     private int idremito;
     private int idcliente;
     private int tipodoc;
@@ -21,13 +29,15 @@ public class Remito {
     private boolean pagado;
     private int cant_pack;
     private double peso_pack;
+    private Cliente cliente;
+    private Set<RemitoDetalle> detalles = new HashSet<>();
 
     public Remito() {
     }
 
     public Remito(int idremito, int idcliente, int tipodoc, Date fecha, Date fechaentrega) {
-        this.idremito = idremito;
-        this.idcliente = idcliente;
+        this.setIdremito(idremito);
+        this.setIdcliente(idcliente);
         this.tipodoc = tipodoc;
         this.fecha = fecha;
         this.fechaentrega = fechaentrega;
@@ -39,6 +49,11 @@ public class Remito {
 
     public void setIdremito(int idremito) {
         this.idremito = idremito;
+        try {
+            this.detalles = RemitoDetalleDP.getAllRemito(this);
+        } catch (SQLException ex) {
+            Logger.getLogger(Remito.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public int getIdcliente() {
@@ -47,6 +62,11 @@ public class Remito {
 
     public void setIdcliente(int idcliente) {
         this.idcliente = idcliente;
+        try {
+            this.setCliente(ClienteDP.getOne(idcliente));
+        } catch (SQLException ex) {
+            Logger.getLogger(Remito.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public int getTipodoc() {
@@ -169,14 +189,35 @@ public class Remito {
         this.peso_pack = peso_pack;
     }
 
-    @Override
-    public String toString() {
-        return "Remito{" + "idremito=" + idremito + ", idcliente=" + idcliente + ", tipodoc=" + tipodoc + ", fecha=" + fecha + ", fechaentrega=" + fechaentrega + ", transporte=" + transporte + ", comentarios=" + comentarios + ", chequeado=" + chequeado + ", precesado=" + precesado + ", entregado=" + entregado + ", stockpro=" + stockpro + ", sel=" + sel + ", aux1=" + aux1 + ", aux2=" + aux2 + ", pagado=" + pagado + ", cant_pack=" + cant_pack + ", peso_pack=" + peso_pack + '}';
+    public Cliente getCliente() {
+       return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
     
+    public void addDetalle (RemitoDetalle detalle){
+        this.detalles.add(detalle);
+    }
     
+    public void removeDetalle(RemitoDetalle detalle){
+        this.detalles.remove(detalle);
+    }
     
-    
-    
-    
+    public void setDetalles (Set<RemitoDetalle> detalles){
+        this.detalles = detalles;
+    }
+    public Set<RemitoDetalle> getDetalles(){
+        return this.detalles;
+    }
+
+    @Override
+    public String toString() {
+        String data;
+        DecimalFormat df = new DecimalFormat("000000000000");
+        data = df.format(idremito);
+        return data;
+    }
+
 }

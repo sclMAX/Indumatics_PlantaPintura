@@ -1,9 +1,13 @@
 package indumatics_plantapintura.data.clases;
 
+import indumatics_plantapintura.data.providers.RutaDP;
 import java.sql.Date;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Cliente {
-    
+public final class Cliente {
+
     private int idcliente;
     private String razon_social;
     private String direccion;
@@ -35,6 +39,7 @@ public class Cliente {
     private double des_natural;
     private double des_blanco;
     private double des_color;
+    private Ruta rutaObj;
 
     public Cliente() {
     }
@@ -65,7 +70,7 @@ public class Cliente {
         this.sel = sel;
         this.fua = fua;
         this.fi = fi;
-        this.ruta = ruta;
+        this.setRuta(ruta);
         this.aux1 = aux1;
         this.aux2 = aux2;
         this.des_natural = des_natural;
@@ -279,7 +284,21 @@ public class Cliente {
 
     public void setRuta(int ruta) {
         this.ruta = ruta;
+        try {
+            setRutaObj(RutaDP.getOne(ruta));
+        } catch (SQLException ex) {
+            Logger.getLogger(Cliente.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+
+    public Ruta getRutaObj() {
+        return rutaObj;
+    }
+    
+    public void setRutaObj(Ruta ruta){
+        this.rutaObj = ruta;
+    }
+    
 
     public String getAux1() {
         return aux1;
@@ -325,10 +344,5 @@ public class Cliente {
     public String toString() {
         return razon_social;
     }
-    
-    
-    
-            
-    
-    
+
 }

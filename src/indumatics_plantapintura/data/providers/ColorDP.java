@@ -1,33 +1,33 @@
 package indumatics_plantapintura.data.providers;
 
-import indumatics_plantapintura.data.AccessConector;
 import indumatics_plantapintura.data.clases.Color;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ColorDP {
-    
-    private final Connection con = AccessConector.getInstance();
-    
-    public Color getOne(int id){
+
+    public static Color getOne(int id) throws SQLException {
         Color res = null;
-        try {
-            Statement st;
-            st = con.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM Colores WHERE Colores.id = " + Integer.toString(id));
-            if(rs.next()){
-                res = new Color(rs.getInt(1),rs.getString(2),rs.getFloat(3),rs.getDouble(4)
-                ,rs.getString(5),rs.getDate(6),rs.getBoolean(7),rs.getInt(8));
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(ColorDP.class.getName()).log(Level.SEVERE, null, ex);
+        String sql = "SELECT * FROM Colores "
+                + "WHERE Colores.id = " + Integer.toString(id)+" ;";
+        ResultSet rs = ComunDP.getData(sql);
+        if (rs.next()) {
+            res = DbToObj(rs);
         }
-        
         return res;
     }
-    
+
+    private static Color DbToObj(ResultSet rs) throws SQLException {
+        Color res = new Color();
+        res.setId(rs.getInt("ID"));
+        res.setColor(rs.getString("COLOR"));
+        res.setPrecio(rs.getDouble("PRECIO"));
+        res.setIncremento(rs.getDouble("INCREMENTO"));
+        res.setComentarios(rs.getString("COMENTARIOS"));
+        res.setFua(rs.getDate("FUA"));
+        res.setEspintura(rs.getBoolean("ESPINTURA"));
+        res.setIdplanta(rs.getInt("IDPLANTA"));
+        return res;
+    }
+
 }

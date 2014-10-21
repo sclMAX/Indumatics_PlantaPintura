@@ -5,7 +5,7 @@ import java.sql.Date;
 public class Color {
     private int id;
     private String color;
-    private float precio;
+    private double precio;
     private double incremento;
     private String comentarios;
     private Date fua;
@@ -44,11 +44,11 @@ public class Color {
         this.color = color;
     }
 
-    public float getPrecio() {
+    public double getPrecio() {
         return precio;
     }
 
-    public void setPrecio(float precio) {
+    public void setPrecio(double precio) {
         this.precio = precio;
     }
 
@@ -94,7 +94,7 @@ public class Color {
 
     @Override
     public String toString() {
-        return Integer.toString(id)+ " - " + color;
+        return color;
     }
     
     
