@@ -1,11 +1,8 @@
 package indumatics_plantapintura.guis;
 
 import indumatics_plantapintura.data.clases.OrdenPinturaDetalle;
-import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -26,13 +23,15 @@ public class frmListadoPerfilesPorColor extends javax.swing.JFrame {
         DefaultTableModel dtm = (DefaultTableModel) jtOrdenPinturaDetalle.getModel();
         dtm.setRowCount(0);
         for (OrdenPinturaDetalle detalle : detalles) {
-            Object[] obj = new Object[6];
+            Object[] obj = new Object[8];
             obj[0] = detalle;
             obj[1] = detalle.getPerfil();
             obj[2] = detalle.getColorHorigen();
-            obj[3] = detalle.getColorDestino();
-            obj[4] = detalle.getStockDisponible();
-            obj[5] = detalle.getStockTotal();
+            obj[3] = detalle.getStockColorHorigen();
+            obj[4] = detalle.getColorDestino();
+            obj[5] = detalle.getStockColorDestino();
+            obj[6] = detalle.getStockDisponible();
+            obj[7] = detalle.getStockTotal();
 
             dtm.addRow(obj);
         }
@@ -73,7 +72,7 @@ public class frmListadoPerfilesPorColor extends javax.swing.JFrame {
 
             },
             new String [] {
-                "CANTIDAD", "PERFIL", "COLOR HORIGEN", "COLOR DESTINO", "STOCK DISPONIBLE", "STOCK TOTAL"
+                "CANTIDAD", "PERFIL", "COLOR HORIGEN", "STK CH", "COLOR DESTINO", "STK CD", "STOCK DISPONIBLE", "STOCK TOTAL"
             }
         ));
         jtOrdenPinturaDetalle.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);

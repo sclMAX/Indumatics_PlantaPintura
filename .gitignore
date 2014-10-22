@@ -213,3 +213,8 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+<<<<<<< HEAD
+nbproject/private/private.xml
+=======
+nbproject/private/private.properties
+>>>>>>> 314f3e59c54ef53d54d22a6d50d36f0c4d9c6d2c

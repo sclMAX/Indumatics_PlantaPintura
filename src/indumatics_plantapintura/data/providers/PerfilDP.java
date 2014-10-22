@@ -8,9 +8,11 @@ import java.util.Set;
 
 public class PerfilDP {
 
+    private static String sql;
+
     public static Set<Perfil> getAll() throws SQLException {
         Set<Perfil> res = new HashSet<>();
-        String sql = "SELECT * FROM PERFILES ";
+        sql = "SELECT * FROM PERFILES ";
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {
             res.add(DbToObj(rs));
@@ -20,14 +22,14 @@ public class PerfilDP {
 
     public static Perfil getOne(String id) throws SQLException {
         Perfil res = null;
-        String sql = "SELECT * FROM PERFILES WHERE PERFILES.IDPERF =  '" + id + "'";
+        sql = "SELECT * FROM PERFILES WHERE PERFILES.IDPERF =  '" + id + "'";
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {
             res = DbToObj(rs);
         }
         return res;
     }
-    
+
     private static Perfil DbToObj(ResultSet rs) throws SQLException {
         Perfil res = new Perfil();
         res.setIdperf(rs.getString("IDPERF"));

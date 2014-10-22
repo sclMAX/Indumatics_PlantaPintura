@@ -6,9 +6,11 @@ import java.sql.SQLException;
 
 public class RutaDP {
 
+    private static String sql;
+
     public static Ruta getOne(int id) throws SQLException {
         Ruta res = null;
-        String sql = "SELECT * FROM RUTAS WHERE RUTAS.ID = " + Integer.toString(id);
+        sql = "SELECT * FROM RUTAS WHERE RUTAS.ID = " + Integer.toString(id);
         ResultSet rs = ComunDP.getData(sql);
         if (rs.next()) {
             res = DbToObj(rs);

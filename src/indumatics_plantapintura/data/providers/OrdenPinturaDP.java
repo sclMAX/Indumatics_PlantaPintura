@@ -8,9 +8,11 @@ import java.util.Set;
 
 public class OrdenPinturaDP {
 
+    private static String sql;
+
     public static Set<OrdenPintura> getAll() throws SQLException {
         Set<OrdenPintura> res = new HashSet<>();
-        String sql = "SELECT * FROM OPINTURA;";
+        sql = "SELECT * FROM OPINTURA;";
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {
             res.add(DbToObj(rs));

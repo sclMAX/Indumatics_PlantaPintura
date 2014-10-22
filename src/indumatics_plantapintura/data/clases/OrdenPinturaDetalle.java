@@ -191,6 +191,24 @@ public class OrdenPinturaDetalle {
         }
     }
     
+    public int getStockColorHorigen(){
+        try {
+            return StockDP.getStockPerfilColor(perfil, colorHorigen);
+        } catch (SQLException ex) {
+            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    }
+    
+    public int getStockColorDestino(){
+        try {
+            return StockDP.getStockPerfilColor(perfil, colorDestino);
+        } catch (SQLException ex) {
+            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            return 0;
+        }
+    }
+    
     @Override
     public String toString() {
         return Integer.toString(cantidad);
