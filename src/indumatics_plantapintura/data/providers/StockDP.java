@@ -66,6 +66,20 @@ public class StockDP {
         }
         return res;
     }
+    
+    public static int getStockPerfilColor(Perfil perfil, Color color) throws SQLException{
+        int res = 0;
+        sql = "SELECT STOCK "
+                + "FROM STOCK "
+                + "WHERE (STOCK.IDPERFIL = '{PERFIL}')AND(STOCK.COLOR = {COLOR});";
+        sql = sql.replace("{PERFIL}", perfil.getIdperf());
+        sql = sql.replace("{COLOR}", Integer.toString(color.getId()));
+        ResultSet rs = ComunDP.getData(sql);
+        if(rs.next()){
+            res = rs.getInt("STOCK");
+        }
+        return res;
+    }
 
     public static Set<Stock> getAllColor(Color color) throws SQLException {
         Set<Stock> res = new HashSet<>();

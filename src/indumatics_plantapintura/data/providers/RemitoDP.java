@@ -8,9 +8,11 @@ import java.util.Set;
 
 public class RemitoDP {
 
+    private static String sql;
+
     public static Remito getOne(int id) throws SQLException {
         Remito res = null;
-        String sql = "SELECT * FROM CLIENTES_REMITOS "
+        sql = "SELECT * FROM CLIENTES_REMITOS "
                 + "WHERE CLIENTES_REMITOS.idremito = " + Integer.toString(id);
         ResultSet rs = ComunDP.getData(sql);
         if (rs.next()) {
@@ -21,7 +23,7 @@ public class RemitoDP {
 
     public static Set<Remito> getAll() throws SQLException {
         Set<Remito> res = new HashSet<>();
-        String sql = "SELECT * FROM CLIENTES_REMITOS ";
+        sql = "SELECT * FROM CLIENTES_REMITOS ";
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {
             res.add(DbToObj(rs));

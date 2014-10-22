@@ -6,9 +6,11 @@ import java.sql.SQLException;
 
 public class ClienteDP {
 
+    private static String sql;
+
     public static Cliente getOne(int id) throws SQLException {
         Cliente res = null;
-        String sql = "SELECT * FROM Clientes WHERE Clientes.idcliente = " + Integer.toString(id);
+        sql = "SELECT * FROM Clientes WHERE Clientes.idcliente = " + Integer.toString(id);
         ResultSet rs = ComunDP.getData(sql);
         if (rs.next()) {
             res = DbToObj(rs);

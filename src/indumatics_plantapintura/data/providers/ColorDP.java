@@ -6,10 +6,12 @@ import java.sql.SQLException;
 
 public class ColorDP {
 
+    private static String sql;
+
     public static Color getOne(int id) throws SQLException {
         Color res = null;
-        String sql = "SELECT * FROM Colores "
-                + "WHERE Colores.id = " + Integer.toString(id)+" ;";
+        sql = "SELECT * FROM Colores "
+                + "WHERE Colores.id = " + Integer.toString(id) + " ;";
         ResultSet rs = ComunDP.getData(sql);
         if (rs.next()) {
             res = DbToObj(rs);

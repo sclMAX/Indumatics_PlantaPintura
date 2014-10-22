@@ -9,9 +9,11 @@ import java.util.Set;
 
 public class RemitoDetalleDP {
 
+    private static String sql;
+
     public static Set<RemitoDetalle> getAll() throws SQLException {
         Set<RemitoDetalle> res = new HashSet<>();
-        String sql = "SELECT * FROM CLIENTES_DETALLE_REMITO ";
+        sql = "SELECT * FROM CLIENTES_DETALLE_REMITO ";
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {
             res.add(DbToObj(rs));
@@ -21,7 +23,7 @@ public class RemitoDetalleDP {
 
     public static Set<RemitoDetalle> getAllRemito(Remito remito) throws SQLException {
         Set<RemitoDetalle> res = new HashSet<>();
-        String sql = "SELECT * FROM CLIENTES_DETALLE_REMITO "
+        sql = "SELECT * FROM CLIENTES_DETALLE_REMITO "
                 + " WHERE CLIENTES_DETALLE_REMITO.IDREMITO = " + Integer.toString(remito.getIdremito());
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {

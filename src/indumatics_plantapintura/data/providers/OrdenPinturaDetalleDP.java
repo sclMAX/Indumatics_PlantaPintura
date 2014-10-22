@@ -9,9 +9,11 @@ import java.util.Set;
 
 public class OrdenPinturaDetalleDP {
 
+    private static String sql;
+
     public static Set<OrdenPinturaDetalle> getDetalleOrden(OrdenPintura orden) throws SQLException {
         Set<OrdenPinturaDetalle> res = new HashSet<>();
-        String sql = "SELECT * FROM OPINTURA_DETALLE "
+        sql = "SELECT * FROM OPINTURA_DETALLE "
                 + "WHERE IDORDEN = " + Integer.toString(orden.getNro());
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {
