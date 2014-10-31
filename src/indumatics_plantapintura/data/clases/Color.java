@@ -3,6 +3,7 @@ package indumatics_plantapintura.data.clases;
 import java.sql.Date;
 
 public class Color {
+
     private int id;
     private String color;
     private double precio;
@@ -15,6 +16,10 @@ public class Color {
     public Color() {
     }
 
+    public Color(int id) {
+        this.id = id;
+    }
+
     public Color(int id, String color, float precio, double incremento, String comentarios, Date fua, boolean espintura, int idplanta) {
         this.id = id;
         this.color = color;
@@ -25,8 +30,6 @@ public class Color {
         this.espintura = espintura;
         this.idplanta = idplanta;
     }
-    
-    
 
     public int getId() {
         return id;
@@ -96,11 +99,5 @@ public class Color {
     public String toString() {
         return color;
     }
-    
-    
-    
-    
-   
-    
-    
+
 }

@@ -20,6 +20,8 @@ public class OrdenPintura {
     private Set<OrdenPinturaDetalle> detalles = new HashSet<>();
 
     public OrdenPintura(int nro, int idproveedor, Date fecha, Date fechaentrega) {
+        this.comentarios = "";
+        this.procesado = false;
         this.nro = nro;
         this.idproveedor = idproveedor;
         this.fecha = fecha;
@@ -27,13 +29,17 @@ public class OrdenPintura {
     }
 
     public OrdenPintura() {
+        this.comentarios = "";
+        this.procesado = false;
+        this.fecha = new Date(new java.util.Date().getTime());
+        this.fechaentrega = this.fecha;
     }
 
     public int getNro() {
         return nro;
     }
 
-    public void setNro(int nro)  {
+    public void setNro(int nro) {
         this.nro = nro;
         try {
             this.setDetalles(OrdenPinturaDetalleDP.getDetalleOrden(this));
@@ -67,7 +73,10 @@ public class OrdenPintura {
     }
 
     public String getComentarios() {
-        return comentarios;
+        if (comentarios != null) {
+            return comentarios;
+        }
+        return "";
     }
 
     public void setComentarios(String comentarios) {
@@ -81,20 +90,20 @@ public class OrdenPintura {
     public void setProcesado(boolean procesado) {
         this.procesado = procesado;
     }
-    
-    public void addDetalle(OrdenPinturaDetalle detalle){
+
+    public void addDetalle(OrdenPinturaDetalle detalle) {
         this.detalles.add(detalle);
     }
-    
-    public void removeDetalle (OrdenPinturaDetalle detalle){
+
+    public void removeDetalle(OrdenPinturaDetalle detalle) {
         this.detalles.remove(detalle);
     }
-    
-    public Set<OrdenPinturaDetalle> getDetalles(){
+
+    public Set<OrdenPinturaDetalle> getDetalles() {
         return detalles;
     }
-    
-    public void setDetalles(Set<OrdenPinturaDetalle> detalles){
+
+    public void setDetalles(Set<OrdenPinturaDetalle> detalles) {
         this.detalles = detalles;
     }
 

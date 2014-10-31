@@ -5,11 +5,14 @@
  */
 package indumatics_plantapintura.guis;
 
+import indumatics_plantapintura.data.Espera;
 import indumatics_plantapintura.data.PedidosData;
 import indumatics_plantapintura.data.clases.Cliente;
 import indumatics_plantapintura.data.clases.Color;
 import indumatics_plantapintura.data.clases.Remito;
 import indumatics_plantapintura.data.clases.RemitoDetalle;
+import indumatics_plantapintura.data.providers.OrdenPinturaDetalleDP;
+import java.awt.Cursor;
 import java.sql.SQLException;
 import java.util.Set;
 import java.util.logging.Level;
@@ -129,21 +132,49 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
 
     private void buscarPedidos() {
         if ((colores != null) && (clientes != null)) {
-            pedidos = PedidosData.getPedidosCC(colores, clientes);
-            cargarTablaPedidos(pedidos);
+            try {
+                Espera.Mostrar();
+                pedidos = PedidosData.getPedidosCC(colores, clientes);
+                cargarTablaPedidos(pedidos);
+            } finally {
+                Espera.Ocultar();
+            }
         }
     }
 
     private void buscarClientes() {
-        if (colores != null) {
-            clientes = PedidosData.getClientesPedidosColores(colores);
+        try {
+            Espera.Mostrar();
+            if (colores != null) {
+                JOptionPane.showMessageDialog(null, "Se Buscaran solo clientes que "
+                        + "tengan pedidos en los colores listados.\n"
+                        + "Para buscar todos los qclientes que tengan "
+                        + "pedidos BORRE la lista de colores primero.",
+                        "Filtrado", JOptionPane.INFORMATION_MESSAGE);
+                clientes = PedidosData.getClientesPedidosColores(colores);
+            } else {
+                clientes = PedidosData.getClientesPedidos();
+            }
             cargarTablaClientes(clientes);
+            pedidos = null;
+            cargarTablaPedidos(pedidos);
+        } finally {
+            Espera.Ocultar();
         }
     }
 
     private void buscarColores() {
-        colores = PedidosData.getColoresPedidos();
-        cargarTablaColores(colores);
+        if (clientes != null) {
+            try {
+                Espera.Mostrar();
+                colores = PedidosData.getColoresPedidosCliente(clientes);
+                cargarTablaColores(colores);
+                pedidos = null;
+                cargarTablaPedidos(pedidos);
+            } finally {
+                Espera.Ocultar();
+            }
+        }
     }
 
     private void quitarPedidoSeleccionado() {
@@ -159,6 +190,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
                 colores.remove((Color) jtColores.getValueAt(jtColores.getSelectedRows()[i], 0));
             }
             cargarTablaColores(colores);
+            buscarClientes();
         }
     }
 
@@ -168,6 +200,45 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
                 clientes.remove((Cliente) jtClientes.getValueAt(jtClientes.getSelectedRows()[i], 0));
             }
             cargarTablaClientes(clientes);
+            buscarColores();
+        }
+    }
+
+    private void cargarListaPerfileColor() {
+        if (jtColores.getSelectedRow() != -1) {
+            try {
+                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                Color c = (Color) jtColores.getValueAt(jtColores.getSelectedRow(), 0);
+                try {
+                    frmListadoPerfilesPorColor jfOrden;
+                    jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenPedidosPorColor(pedidos, c));
+                    jfOrden.setTitle("Perfiles pedido en " + c.getColor());
+                    jfOrden.setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(frmBuscarPedidos.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } finally {
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Debe seleccionar un color!",
+                    "Listar Perfiles...", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+    private void cargarListaPerfilePretratar() {
+        try {
+           setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            try {
+                frmListadoPerfilesPorColor jfOrden;
+                jfOrden = new frmListadoPerfilesPorColor(OrdenPinturaDetalleDP.getOrdenPretratamiento());
+                jfOrden.setTitle("Perfiles a Pretratar");
+                jfOrden.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(frmBuscarPedidos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
@@ -188,7 +259,10 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jbColoresBuscar = new javax.swing.JButton();
         jbColoresQuitar = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
+        jbLimpiarLista = new javax.swing.JButton();
+        jSeparator2 = new javax.swing.JToolBar.Separator();
         jbVerPerfiles_x_Color = new javax.swing.JButton();
+        jbPretratamiento = new javax.swing.JButton();
         jpClientes = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -209,6 +283,8 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jtDetallePedido = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Consulta Pedido ");
+        setAutoRequestFocus(false);
 
         jpColores.setBorder(javax.swing.BorderFactory.createTitledBorder("COLORES"));
 
@@ -274,6 +350,19 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jToolBar1.add(jbColoresQuitar);
         jToolBar1.add(jSeparator1);
 
+        jbLimpiarLista.setIcon(new javax.swing.ImageIcon(getClass().getResource("/indumatics_plantapintura/recursos/iconos/btn_delete_24x24.gif"))); // NOI18N
+        jbLimpiarLista.setToolTipText(bundle.getString("Quitar")); // NOI18N
+        jbLimpiarLista.setFocusable(false);
+        jbLimpiarLista.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jbLimpiarLista.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jbLimpiarLista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbLimpiarListaActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jbLimpiarLista);
+        jToolBar1.add(jSeparator2);
+
         jbVerPerfiles_x_Color.setIcon(new javax.swing.ImageIcon(getClass().getResource("/indumatics_plantapintura/recursos/iconos/options_24x24.gif"))); // NOI18N
         jbVerPerfiles_x_Color.setToolTipText(bundle.getString("listarperfilescolor")); // NOI18N
         jbVerPerfiles_x_Color.setFocusable(false);
@@ -285,6 +374,18 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
             }
         });
         jToolBar1.add(jbVerPerfiles_x_Color);
+
+        jbPretratamiento.setIcon(new javax.swing.ImageIcon(getClass().getResource("/indumatics_plantapintura/recursos/iconos/produccion_24x24.gif"))); // NOI18N
+        jbPretratamiento.setToolTipText(bundle.getString("listarperfilescolor")); // NOI18N
+        jbPretratamiento.setFocusable(false);
+        jbPretratamiento.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jbPretratamiento.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jbPretratamiento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbPretratamientoActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(jbPretratamiento);
 
         javax.swing.GroupLayout jpColoresLayout = new javax.swing.GroupLayout(jpColores);
         jpColores.setLayout(jpColoresLayout);
@@ -298,7 +399,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jpColoresLayout.setVerticalGroup(
             jpColoresLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 171, Short.MAX_VALUE)
         );
 
         jpClientes.setBorder(javax.swing.BorderFactory.createTitledBorder("CLIENTES"));
@@ -328,7 +429,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -375,7 +476,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jpClientesLayout.setVerticalGroup(
             jpClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+            .addComponent(jToolBar2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         jpPedidos.setBorder(javax.swing.BorderFactory.createTitledBorder("PEDIDOS"));
@@ -405,7 +506,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE)
+            .addComponent(jScrollPane3)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -452,7 +553,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jpPedidosLayout.setVerticalGroup(
             jpPedidosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+            .addComponent(jToolBar3, javax.swing.GroupLayout.DEFAULT_SIZE, 143, Short.MAX_VALUE)
         );
 
         jpDetallePedidos.setBorder(javax.swing.BorderFactory.createTitledBorder("DETALLLE PEDIDO"));
@@ -503,7 +604,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         );
         jPanel8Layout.setVerticalGroup(
             jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
+            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 56, Short.MAX_VALUE)
         );
 
         javax.swing.GroupLayout jpDetallePedidosLayout = new javax.swing.GroupLayout(jpDetallePedidos);
@@ -526,12 +627,12 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jpColores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jpClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addComponent(jpPedidos, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jpDetallePedidos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jpDetallePedidos, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jpClientes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jpColores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -576,20 +677,18 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     }//GEN-LAST:event_jtPedidosBuscarActionPerformed
 
     private void jbVerPerfiles_x_ColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbVerPerfiles_x_ColorActionPerformed
-        if (jtColores.getSelectedRow() != -1) {
-            Color c = (Color) jtColores.getValueAt(jtColores.getSelectedRow(), 0);
-            try {
-                frmListadoPerfilesPorColor jfOrden;
-                jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenPedidosPorColor(pedidos, c));
-                jfOrden.setVisible(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(frmBuscarPedidos.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }else{
-            JOptionPane.showMessageDialog(null, "Debe seleccionar un color!", 
-                    "Listar Perfiles...", JOptionPane.WARNING_MESSAGE);
-        }
+        cargarListaPerfileColor();
     }//GEN-LAST:event_jbVerPerfiles_x_ColorActionPerformed
+
+    private void jbLimpiarListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbLimpiarListaActionPerformed
+        colores = null;
+        cargarTablaColores(colores);
+        buscarClientes();
+    }//GEN-LAST:event_jbLimpiarListaActionPerformed
+
+    private void jbPretratamientoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPretratamientoActionPerformed
+        cargarListaPerfilePretratar();
+    }//GEN-LAST:event_jbPretratamientoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -636,6 +735,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JToolBar.Separator jSeparator1;
+    private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
@@ -643,6 +743,8 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     private javax.swing.JButton jbClientesQuitar;
     private javax.swing.JButton jbColoresBuscar;
     private javax.swing.JButton jbColoresQuitar;
+    private javax.swing.JButton jbLimpiarLista;
+    private javax.swing.JButton jbPretratamiento;
     private javax.swing.JButton jbVerPerfiles_x_Color;
     private javax.swing.JPanel jpClientes;
     private javax.swing.JPanel jpColores;

@@ -3,10 +3,14 @@ package indumatics_plantapintura.data.providers;
 import indumatics_plantapintura.data.clases.Color;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ColorDP {
 
     private static String sql;
+    public static final int ID_NATURAL = 5;
+    public static final int ID_PRETRATADO = 35;
 
     public static Color getOne(int id) throws SQLException {
         Color res = null;
@@ -15,6 +19,16 @@ public class ColorDP {
         ResultSet rs = ComunDP.getData(sql);
         if (rs.next()) {
             res = DbToObj(rs);
+        }
+        return res;
+    }
+    
+    public static Set<Color> getAll() throws SQLException{
+        Set<Color> res = new HashSet<>();
+        sql = "SELECT * FROM COLORES;";
+        ResultSet rs = ComunDP.getData(sql);
+        while(rs.next()){
+            res.add(DbToObj(rs));
         }
         return res;
     }

@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import javax.swing.JOptionPane;
 
 public class AccessConector {
@@ -13,7 +14,7 @@ public class AccessConector {
     private static final String DataBase = "K:\\INDUMATICS DATA\\INDUMATICS S.A\\GESTION\\VENTPERF_new.accdb";
 
     private AccessConector() {
-        
+
     }
 
     private static synchronized void createInstance() {
@@ -45,5 +46,21 @@ public class AccessConector {
             createInstance();
         }
         return con;
+    }
+
+    public static int getPrimaryKey() throws SQLException {
+        int pk = -1;
+        if (instance != null) {
+            String sql = "SELECT @@IDENTITY";
+            Statement statement = con.createStatement();
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()) {
+                pk = rs.getInt(1);
+            }
+
+            rs.close();
+            statement.close();
+        }
+        return pk;
     }
 }

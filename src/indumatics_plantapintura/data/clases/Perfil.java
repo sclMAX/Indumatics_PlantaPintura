@@ -1,8 +1,6 @@
 package indumatics_plantapintura.data.clases;
 
-import indumatics_plantapintura.data.providers.StockDP;
 import java.sql.Date;
-import java.sql.SQLException;
 
 public class Perfil {
 
