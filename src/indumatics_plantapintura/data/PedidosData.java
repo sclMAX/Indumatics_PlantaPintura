@@ -44,8 +44,9 @@ public class PedidosData {
     }
 
     public static Set<Color> getColoresPedidosCliente(Set<Cliente> clientes) {
-        Set<Color> l;
-        l = new HashSet<>();
+        Set<Color> res;
+        Set<Cliente> subclientes = new HashSet<>();
+        res = new HashSet<>();
         try {
             sql = "SELECT DISTINCT (CLIENTES_DETALLE_REMITO.COLOR)"
                     + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO "
@@ -56,9 +57,15 @@ public class PedidosData {
                     + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False)"
                     + "AND ({CLIENTES}));";
             String subSql = "";
+            int clausulas = 0;
             for (Cliente cliente : clientes) {
+                clausulas++;
+                if(clausulas < 30){
                 subSql = subSql + "(CLIENTES_REMITOS.IDCLIENTE = "
                         + Integer.toString(cliente.getIdcliente()) + ") OR ";
+                }else{
+                    subclientes.add(cliente);
+                }
             }
             subSql = subSql.substring(0, subSql.length() - 3);
             sql = sql.replace("{CLIENTES}", subSql);
@@ -66,13 +73,18 @@ public class PedidosData {
             while (rs.next()) {
                 Color color = ColorDP.getOne(rs.getInt("COLOR"));
                 if (color != null) {
-                    l.add(color);
+                    res.add(color);
+                }
+            }
+            if(!subclientes.isEmpty()){
+                for(Color col : getColoresPedidosCliente(subclientes)){
+                    res.add(col);
                 }
             }
         } catch (SQLException ex) {
             Logger.getLogger(PedidosData.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return l;
+        return res;
     }
 
     public static Set<Cliente> getClientesPedidos() {
@@ -150,6 +162,7 @@ public class PedidosData {
 
     public static Set<Remito> getPedidosCC(Set<Color> colores, Set<Cliente> clientes) {
         Set<Remito> res = new HashSet<>();
+        Set<Cliente> subclientes = new HashSet<>();
         try {
             sql = "SELECT DISTINCT (CLIENTES_REMITOS.IDREMITO) AS PEDIDO "
                     + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO ON "
@@ -163,9 +176,15 @@ public class PedidosData {
             }
             sql = sql.substring(0, sql.length() - 3);
             sql = sql + ") AND( ";
+            int clausulas = 0;
             for (Cliente cliente : clientes) {
-                sql = sql + "(CLIENTES_REMITOS.IDCLIENTE = "
-                        + Integer.toString(cliente.getIdcliente()) + ") OR ";
+                clausulas++;
+                if (clausulas < 30) {
+                    sql = sql + "(CLIENTES_REMITOS.IDCLIENTE = "
+                            + Integer.toString(cliente.getIdcliente()) + ") OR ";
+                } else {
+                    subclientes.add(cliente);
+                }
             }
             sql = sql.substring(0, sql.length() - 3);
             sql = sql + "));";
@@ -176,6 +195,11 @@ public class PedidosData {
                     res.add(pedido);
                 }
             }
+            if(!subclientes.isEmpty()){
+                for(Remito rem : getPedidosCC(colores,subclientes)){
+                    res.add(rem);
+                }
+            }
         } catch (SQLException ex) {
             Logger.getLogger(PedidosData.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -184,6 +208,8 @@ public class PedidosData {
 
     public static Set<OrdenPinturaDetalle> genOrdenPedidosPorColor(Set<Remito> pedidos, Color color) throws SQLException {
         Set<OrdenPinturaDetalle> orden = new HashSet<>();
+        Set<Remito> suborden = new HashSet<>();
+
         sql = "SELECT CLIENTES_DETALLE_REMITO.CANTIDAD, "
                 + "CLIENTES_DETALLE_REMITO.IDPERFIL, CLIENTES_DETALLE_REMITO.LARGO, "
                 + "CLIENTES_DETALLE_REMITO.COLOR, CLIENTES_DETALLE_REMITO.PROCESADO, "
@@ -202,9 +228,15 @@ public class PedidosData {
                 + "((CLIENTES_REMITOS.ENTREGADO)=False)AND ({PEDIDOS}))";
         sql = sql.replace("{COLOR}", Integer.toString(color.getId()));
         String subSql = "";
+        int clausulas = 0;
         for (Remito pedido : pedidos) {
-            String tmp = "(CLIENTES_DETALLE_REMITO.IDREMITO = " + Integer.toString(pedido.getIdremito()) + ") OR ";
-            subSql = subSql + tmp;
+            clausulas++;
+            if (clausulas < 40) {
+                String tmp = "(CLIENTES_DETALLE_REMITO.IDREMITO = " + Integer.toString(pedido.getIdremito()) + ") OR ";
+                subSql = subSql + tmp;
+            } else {
+                suborden.add(pedido);
+            }
         }
         subSql = subSql.substring(0, subSql.length() - 3);
         sql = sql.replace("{PEDIDOS}", subSql);
@@ -222,6 +254,11 @@ public class PedidosData {
             detalle.setColorOrigen(pretratado);
             detalle.setColorDestino(color);
             orden.add(detalle);
+        }
+        if (!suborden.isEmpty()) {
+            for (OrdenPinturaDetalle detalle : genOrdenPedidosPorColor(suborden, color)) {
+                orden.add(detalle);
+            }
         }
         return orden;
     }
