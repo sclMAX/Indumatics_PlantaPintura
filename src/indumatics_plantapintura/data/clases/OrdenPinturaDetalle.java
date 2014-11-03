@@ -1,23 +1,22 @@
 package indumatics_plantapintura.data.clases;
 
+import indumatics_plantapintura.data.Utils;
 import indumatics_plantapintura.data.providers.ColorDP;
 import indumatics_plantapintura.data.providers.OrdenPinturaDetalleDP;
 import indumatics_plantapintura.data.providers.PerfilDP;
 import indumatics_plantapintura.data.providers.StockDP;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class OrdenPinturaDetalle {
 
     private int id;
     private int idOrden;
-    private int cantidad;
-    private int aProcesar;
-    private String idPerfil;
-    private int colorO;
-    private int colorD;
-    private String comentarios;
+    private int cantidad = 0;
+    private int aProcesar = 0;
+    private String idPerfil = "";
+    private int colorO = 0;
+    private int colorD = 0;
+    private String comentarios = " ";
     private boolean proc = false;
     private boolean pintado = false;
     private boolean stk_Act = false;
@@ -82,7 +81,9 @@ public class OrdenPinturaDetalle {
         try {
             this.perfil = PerfilDP.getOne(idPerfil);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al buscar Perfil ["
+                    + idPerfil + "].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             this.perfil = null;
         }
     }
@@ -91,12 +92,14 @@ public class OrdenPinturaDetalle {
         return colorO;
     }
 
-    public void setColorO(int colorH) {
-        this.colorO = colorH;
+    public void setColorO(int colorO) {
+        this.colorO = colorO;
         try {
-            this.colorOrigen = ColorDP.getOne(colorH);
+            this.colorOrigen = ColorDP.getOne(colorO);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al buscar Color ["
+                    + Integer.toString(colorO) + "].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
         }
     }
 
@@ -109,7 +112,9 @@ public class OrdenPinturaDetalle {
         try {
             this.colorDestino = ColorDP.getOne(colorD);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al buscar Color ["
+                    + Integer.toString(colorD) + "].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
         }
     }
 
@@ -194,7 +199,9 @@ public class OrdenPinturaDetalle {
             }
             return StockDP.getStockTotalPerfil(perfil);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + perfil.getIdperf() + "].[Stock Total].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -206,7 +213,9 @@ public class OrdenPinturaDetalle {
             }
             return StockDP.getStockDisponiblePerfil(perfil);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + perfil.getIdperf() + "].[Stock Disponible].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -218,7 +227,10 @@ public class OrdenPinturaDetalle {
             }
             return StockDP.getStockPerfilColor(perfil, colorOrigen);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + perfil.getIdperf() + "].[Stock Color Origen].["
+                    + colorOrigen.getColor() + "]\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -230,7 +242,10 @@ public class OrdenPinturaDetalle {
             }
             return StockDP.getStockPerfilColor(perfil, colorDestino);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + perfil.getIdperf() + "].[Stock Color Destino].["
+                    + colorDestino.getColor() + "]\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -242,7 +257,10 @@ public class OrdenPinturaDetalle {
             }
             return OrdenPinturaDetalleDP.getProcesoOrigen(idPerfil, colorO);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + idPerfil + "].[En Proceso Color Origen].["
+                    + colorOrigen.getColor() + "]\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -254,7 +272,10 @@ public class OrdenPinturaDetalle {
             }
             return OrdenPinturaDetalleDP.getProcesoDestino(idPerfil, colorD);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + idPerfil + "].[En Proceso Color Destino].["
+                    + colorDestino.getColor() + "]\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -266,7 +287,9 @@ public class OrdenPinturaDetalle {
             }
             return StockDP.getOne(perfil, new Color(ColorDP.ID_NATURAL)).getStock();
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + perfil.getIdperf() + "].[Stock Natural].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -278,7 +301,9 @@ public class OrdenPinturaDetalle {
         try {
             return StockDP.getPedidosNatural(perfil);
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al calcular ["
+                    + perfil.getIdperf() + "].[Pedidos en Natural].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             return 0;
         }
     }
@@ -294,7 +319,9 @@ public class OrdenPinturaDetalle {
                 setaProcesar(0);
             }
         } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
+            Utils.showError("ERROR...", "Error al Validar la cantidad a procesar ["
+                    + perfil.getIdperf() + "].[a Procesar].\n"
+                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
             setaProcesar(0);
         }
     }

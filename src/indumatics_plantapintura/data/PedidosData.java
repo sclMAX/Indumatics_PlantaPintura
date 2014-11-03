@@ -12,8 +12,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PedidosData {
 
@@ -59,17 +57,12 @@ public class PedidosData {
                     + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False)"
                     + "AND ({CLIENTES}));";
             String subSql = "";
-            int clausulas = 0;
             for (Cliente cliente : clientes) {
-                clausulas++;
-                if (clausulas < 30) {
-                    subSql = subSql + "(CLIENTES_REMITOS.IDCLIENTE = "
-                            + Integer.toString(cliente.getIdcliente()) + ") OR ";
-                } else {
-                    subclientes.add(cliente);
-                }
+                subSql = subSql + Integer.toString(cliente.getIdcliente()) + ", ";
             }
-            subSql = subSql.substring(0, subSql.length() - 3);
+            subSql = subSql.substring(0, subSql.length() - 2);
+            
+            subSql = "CLIENTES_REMITOS.IDCLIENTE IN (" + subSql+")";
             sql = sql.replace("{CLIENTES}", subSql);
             ResultSet rs = ComunDP.getData(sql);
             if (rs != null) {
@@ -78,11 +71,6 @@ public class PedidosData {
                     if (color != null) {
                         res.add(color);
                     }
-                }
-            }
-            if (!subclientes.isEmpty()) {
-                for (Color col : getColoresPedidosCliente(subclientes)) {
-                    res.add(col);
                 }
             }
         } catch (SQLException ex) {
@@ -152,11 +140,13 @@ public class PedidosData {
                     + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or (CLIENTES_REMITOS.TIPODOC)=4) AND "
                     + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
                     + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False) AND ( ";
+            String tmp = "";
             for (Color color : colores) {
-                sql = sql + "(CLIENTES_DETALLE_REMITO.COLOR = "
-                        + Integer.toString(color.getId()) + ") OR ";
+                tmp = tmp + Integer.toString(color.getId()) + ", ";
             }
-            sql = sql.substring(0, sql.length() - 3);
+            tmp = tmp.substring(0, tmp.length() - 2);
+
+            sql = sql + " CLIENTES_DETALLE_REMITO.COLOR IN (" + tmp + ")";
             sql = sql + "));";
             ResultSet rs = ComunDP.getData(sql);
             if (rs != null) {
@@ -190,17 +180,12 @@ public class PedidosData {
             }
             sql = sql.substring(0, sql.length() - 3);
             sql = sql + ") AND( ";
-            int clausulas = 0;
+            String tmp = "";
             for (Cliente cliente : clientes) {
-                clausulas++;
-                if (clausulas < 30) {
-                    sql = sql + "(CLIENTES_REMITOS.IDCLIENTE = "
-                            + Integer.toString(cliente.getIdcliente()) + ") OR ";
-                } else {
-                    subclientes.add(cliente);
-                }
+                tmp = tmp + Integer.toString(cliente.getIdcliente()) + ", ";
             }
-            sql = sql.substring(0, sql.length() - 3);
+            tmp = tmp.substring(0, tmp.length() - 2);
+            sql = sql + "CLIENTES_REMITOS.IDCLIENTE IN (" + tmp + ")";
             sql = sql + "));";
             ResultSet rs = ComunDP.getData(sql);
             if (rs != null) {
@@ -225,13 +210,9 @@ public class PedidosData {
 
     public static Set<OrdenPinturaDetalle> genOrdenPedidosPorColor(Set<Remito> pedidos, Color color) {
         Set<OrdenPinturaDetalle> orden = new HashSet<>();
-        Set<Remito> suborden = new HashSet<>();
         try {
             sql = "SELECT CLIENTES_DETALLE_REMITO.CANTIDAD, "
-                    + "CLIENTES_DETALLE_REMITO.IDPERFIL, CLIENTES_DETALLE_REMITO.LARGO, "
-                    + "CLIENTES_DETALLE_REMITO.COLOR, CLIENTES_DETALLE_REMITO.PROCESADO, "
-                    + "CLIENTES_DETALLE_REMITO.EMBALADO, CLIENTES_DETALLE_REMITO.ACT_STOCK, "
-                    + "CLIENTES_REMITOS.ENTREGADO "
+                    + "CLIENTES_DETALLE_REMITO.IDPERFIL, CLIENTES_DETALLE_REMITO.LARGO "
                     + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO ON "
                     + "CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO "
                     + "GROUP BY CLIENTES_DETALLE_REMITO.CANTIDAD,CLIENTES_DETALLE_REMITO.IDPERFIL, CLIENTES_DETALLE_REMITO.LARGO, "
@@ -245,17 +226,12 @@ public class PedidosData {
                     + "((CLIENTES_REMITOS.ENTREGADO)=False)AND ({PEDIDOS}))";
             sql = sql.replace("{COLOR}", Integer.toString(color.getId()));
             String subSql = "";
-            int clausulas = 0;
             for (Remito pedido : pedidos) {
-                clausulas++;
-                if (clausulas < 30) {
-                    String tmp = "(CLIENTES_DETALLE_REMITO.IDREMITO = " + Integer.toString(pedido.getIdremito()) + ") OR ";
-                    subSql = subSql + tmp;
-                } else {
-                    suborden.add(pedido);
-                }
+                String tmp = Integer.toString(pedido.getIdremito()) + ", ";
+                subSql = subSql + tmp;
             }
-            subSql = subSql.substring(0, subSql.length() - 3);
+            subSql = subSql.substring(0, subSql.length() - 2);
+            subSql = "CLIENTES_DETALLE_REMITO.IDREMITO IN (" + subSql + ") ";
             sql = sql.replace("{PEDIDOS}", subSql);
             sql = "SELECT Sum(T.CANTIDAD) AS CANTIDAD, T.IDPERFIL, T.LARGO "
                     + "FROM (" + sql + ") AS T "
@@ -271,11 +247,6 @@ public class PedidosData {
                     detalle.setLargo(rs.getInt("LARGO"));
                     detalle.setColorOrigen(pretratado);
                     detalle.setColorDestino(color);
-                    orden.add(detalle);
-                }
-            }
-            if (!suborden.isEmpty()) {
-                for (OrdenPinturaDetalle detalle : genOrdenPedidosPorColor(suborden, color)) {
                     orden.add(detalle);
                 }
             }

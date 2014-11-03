@@ -1,7 +1,6 @@
 package indumatics_plantapintura.data.providers;
 
 import indumatics_plantapintura.data.AccessConector;
-import indumatics_plantapintura.data.clases.Color;
 import indumatics_plantapintura.data.clases.OrdenPintura;
 import indumatics_plantapintura.data.clases.OrdenPinturaDetalle;
 import java.sql.PreparedStatement;
@@ -91,9 +90,10 @@ public class OrdenPinturaDetalleDP {
 
     public static Set<OrdenPinturaDetalle> getOrdenPretratamiento() throws SQLException {
         Set<OrdenPinturaDetalle> orden = new HashSet<>();
-        sql = "SELECT DISTINCT T.IDPERFIL, Sum(T.CANTIDAD) AS SumaDeCANTIDAD, T.LARGO\n"
-                + "FROM (SELECT *  FROM OPINTURA_DETALLE WHERE ((COLORH = 35) AND (STK_ACT = false)))  AS T\n"
-                + "GROUP BY T.IDPERFIL, T.LARGO, T.IDPERFIL\n"
+        sql = "SELECT DISTINCT T.IDPERFIL, Sum(T.CANTIDAD) AS SumaDeCANTIDAD, T.LARGO "
+                + "FROM (SELECT *  FROM OPINTURA_DETALLE WHERE ((COLORH = "+
+                Integer.toString(ColorDP.ID_PRETRATADO) +") AND (STK_ACT = false)))  AS T "
+                + "GROUP BY T.IDPERFIL, T.LARGO, T.IDPERFIL "
                 + "ORDER BY T.IDPERFIL;";
         ResultSet rs = ComunDP.getData(sql);
         while (rs.next()) {

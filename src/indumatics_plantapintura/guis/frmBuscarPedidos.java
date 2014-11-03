@@ -209,14 +209,11 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
             try {
                 setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
                 Color c = (Color) jtColores.getValueAt(jtColores.getSelectedRow(), 0);
-                try {
-                    frmListadoPerfilesPorColor jfOrden;
-                    jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenPedidosPorColor(pedidos, c));
-                    jfOrden.setTitle("Perfiles pedido en " + c.getColor());
-                    jfOrden.setVisible(true);
-                } catch (SQLException ex) {
-                    Logger.getLogger(frmBuscarPedidos.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                frmListadoPerfilesPorColor jfOrden;
+                jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenPedidosPorColor(pedidos, c));
+                jfOrden.setTitle("Perfiles pedidos en " + c.getColor());
+                jfOrden.setVisible(true);
+
             } finally {
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
@@ -228,11 +225,11 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
 
     private void cargarListaPerfilePretratar() {
         try {
-           setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
             try {
                 frmListadoPerfilesPorColor jfOrden;
                 jfOrden = new frmListadoPerfilesPorColor(OrdenPinturaDetalleDP.getOrdenPretratamiento());
-                jfOrden.setTitle("Perfiles a Pretratar");
+                jfOrden.setTitle("Perfiles a PRETRATAMIENTO");
                 jfOrden.setVisible(true);
             } catch (SQLException ex) {
                 Logger.getLogger(frmBuscarPedidos.class.getName()).log(Level.SEVERE, null, ex);

@@ -5,7 +5,6 @@ import indumatics_plantapintura.data.clases.OrdenPinturaDetalle;
 import indumatics_plantapintura.data.clases.RenderNegativo;
 import indumatics_plantapintura.data.providers.OrdenPinturaDP;
 import java.awt.Cursor;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
