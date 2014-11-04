@@ -54,6 +54,9 @@ public class PerfilDP {
         res.setMpp(rs.getInt("MPP"));
         res.setIdlista(rs.getInt("IDLISTA"));
         res.setRubro(rs.getInt("RUBRO"));
+        res.setPorcentajeNatural(rs.getInt("PNAT"));
+        res.setPorcentajeTratado(rs.getInt("PTRA"));
+        res.setPorcentajeBlanco(rs.getInt("PBLA"));
         return res;
     }
 }

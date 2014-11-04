@@ -12,6 +12,9 @@ public class AccessConector {
     private static AccessConector instance = null;
     private static Connection con = null;
     private static final String DataBase = "K:\\INDUMATICS DATA\\INDUMATICS S.A\\GESTION\\VENTPERF_new.accdb";
+    private static final String DSN = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=" + DataBase;
+    private static final String user = "";
+    private static final String password = "";
 
     private AccessConector() {
 
@@ -20,24 +23,22 @@ public class AccessConector {
     private static synchronized void createInstance() {
         if (instance == null) {
             instance = new AccessConector();
-            conectar();
+            con = conectar();
         }
     }
 
-    private static void conectar() {
+    private static Connection conectar() {
         try {
             String controlador = "sun.jdbc.odbc.JdbcOdbcDriver";
             Class.forName(controlador).newInstance();
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al cargar el Controlador");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+            Utils.showError("ERROR...", "Error al cargar el Controlador.\n ERROR:" + e.getMessage());
         }
         try {
-            String DSN = "jdbc:odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)};DBQ=" + DataBase;
-            String user = "";
-            String password = "";
-            con = DriverManager.getConnection(DSN, user, password);
+            return DriverManager.getConnection(DSN, user, password);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(null, "Error al realizar la conexion " + e);
+             Utils.showError("ERROR...", "Error al realizar la conexion.\n ERROR:" + e.getMessage());
+            return null;
         }
     }
 
@@ -52,14 +53,11 @@ public class AccessConector {
         int pk = -1;
         if (instance != null) {
             String sql = "SELECT @@IDENTITY";
-            Statement statement = con.createStatement();
-            ResultSet rs = statement.executeQuery(sql);
-            while (rs.next()) {
-                pk = rs.getInt(1);
+            try (Statement statement = con.createStatement(); ResultSet rs = statement.executeQuery(sql)) {
+                while (rs.next()) {
+                    pk = rs.getInt(1);
+                }
             }
-
-            rs.close();
-            statement.close();
         }
         return pk;
     }

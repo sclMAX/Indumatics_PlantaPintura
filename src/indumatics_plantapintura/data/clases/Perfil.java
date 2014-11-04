@@ -26,6 +26,9 @@ public class Perfil {
     private int mpp;
     private int idlista;
     private int rubro;
+    private int porcentajeNatural;
+    private int porcentajeTratado;
+    private int porcentajeBlanco;
 
     public Perfil() {
     }
@@ -220,5 +223,71 @@ public class Perfil {
     @Override
     public String toString() {
         return idperf;
+    }
+
+    public int getPorcentajeNatural() {
+        return porcentajeNatural;
+    }
+
+    public void setPorcentajeNatural(int valor) {
+        int dif = valor + porcentajeTratado + porcentajeBlanco;
+        dif = dif - 100;
+        if (0 != dif) {
+            int absDif = Math.abs(dif);
+            int p1 = Math.round(absDif / 2);
+            int p2 = absDif - p1;
+            if (dif > 0) {
+                this.porcentajeBlanco = porcentajeBlanco - p1;
+                this.porcentajeTratado = porcentajeTratado - p2;
+            } else {
+                this.porcentajeBlanco = porcentajeBlanco + p2;
+                this.porcentajeTratado = porcentajeTratado + p1;
+            }
+        }
+        this.porcentajeNatural = valor;
+    }
+
+    public int getPorcentajeTratado() {
+        return porcentajeTratado;
+    }
+
+    public void setPorcentajeTratado(int valor) {
+        int dif = valor + porcentajeNatural + porcentajeBlanco;
+        dif = dif - 100;
+        if (0 != dif) {
+            int absDif = Math.abs(dif);
+            int p1 = Math.round(absDif / 2);
+            int p2 = absDif - p1;
+            if (dif > 0) {
+                this.porcentajeBlanco = porcentajeBlanco - p1;
+                this.porcentajeNatural = porcentajeNatural - p2;
+            } else {
+                this.porcentajeBlanco = porcentajeBlanco + p2;
+                this.porcentajeNatural = porcentajeNatural + p1;
+            }
+        }
+        this.porcentajeTratado = valor;
+    }
+
+    public int getPorcentajeBlanco() {
+        return porcentajeBlanco;
+    }
+
+    public void setPorcentajeBlanco(int valor) {
+        int dif = valor + porcentajeTratado + porcentajeNatural;
+        dif = dif - 100;
+        if (0 != dif) {
+            int absDif = Math.abs(dif);
+            int p1 = Math.round(absDif / 2);
+            int p2 = absDif - p1;
+            if (dif > 0) {
+                this.porcentajeBlanco = porcentajeNatural - p2;
+                this.porcentajeTratado = porcentajeTratado - p1;
+            } else {
+                this.porcentajeBlanco = porcentajeNatural + p1;
+                this.porcentajeTratado = porcentajeTratado + p2;
+            }
+        }
+        this.porcentajeBlanco = valor;
     }
 }
