@@ -18,20 +18,21 @@ public class OrdenPinturaDetalleDP {
         sql = "INSERT INTO OPINTURA_DETALLE (IDORDEN, CANTIDAD, IDPERFIL, "
                 + "COLORH, COLORD, COMENTARIOS, PROC, PINTADO, STK_ACT, ACT_STK, LARGO) "
                 + "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
-        PreparedStatement ps = AccessConector.getInstance().prepareStatement(sql);
-        ps.setInt(1, data.getIdOrden());
-        ps.setInt(2, data.getaProcesar());
-        ps.setString(3, data.getIdPerfil());
-        ps.setInt(4, data.getColorO());
-        ps.setInt(5, data.getColorD());
-        ps.setString(6, data.getComentarios());
-        ps.setBoolean(7, data.isProc());
-        ps.setBoolean(8, data.isPintado());
-        ps.setBoolean(9, data.isStk_Act());
-        ps.setBoolean(10, data.isAct_Stk());
-        ps.setInt(11, data.getLargo());
-        ps.executeUpdate();
-        res = AccessConector.getPrimaryKey();
+        try (PreparedStatement ps = AccessConector.getInstance().prepareStatement(sql)) {
+            ps.setInt(1, data.getIdOrden());
+            ps.setInt(2, data.getaProcesar());
+            ps.setString(3, data.getIdPerfil());
+            ps.setInt(4, data.getColorO());
+            ps.setInt(5, data.getColorD());
+            ps.setString(6, data.getComentarios());
+            ps.setBoolean(7, data.isProc());
+            ps.setBoolean(8, data.isPintado());
+            ps.setBoolean(9, data.isStk_Act());
+            ps.setBoolean(10, data.isAct_Stk());
+            ps.setInt(11, data.getLargo());
+            ps.executeUpdate();
+            res = AccessConector.getPrimaryKey();
+        }
         return res;
     }
 
@@ -39,9 +40,10 @@ public class OrdenPinturaDetalleDP {
         Set<OrdenPinturaDetalle> res = new HashSet<>();
         sql = "SELECT * FROM OPINTURA_DETALLE "
                 + "WHERE IDORDEN = " + Integer.toString(orden.getNro());
-        ResultSet rs = ComunDP.getData(sql);
-        while (rs.next()) {
-            res.add(DbToObj(rs));
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while (rs.next()) {
+                res.add(DbToObj(rs));
+            }
         }
         return res;
     }
@@ -50,11 +52,12 @@ public class OrdenPinturaDetalleDP {
         sql = "SELECT * "
                 + "FROM OPINTURA_DETALLE "
                 + "WHERE ID = " + Integer.toString(id);
-        ResultSet rs = ComunDP.getData(sql);
-        if (rs != null && rs.next()) {
-            return DbToObj(rs);
-        } else {
-            return null;
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            if (rs != null && rs.next()) {
+                return DbToObj(rs);
+            } else {
+                return null;
+            }
         }
     }
 
@@ -66,9 +69,10 @@ public class OrdenPinturaDetalleDP {
                 + "AND (COLORD = {COLOR}));";
         sql = sql.replace("{PERFIL}", idPerfil);
         sql = sql.replace("{COLOR}", Integer.toString(idColor));
-        ResultSet rs = ComunDP.getData(sql);
-        if (rs != null && rs.next()) {
-            return rs.getInt(1);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            if (rs != null && rs.next()) {
+                return rs.getInt(1);
+            }
         }
         return 0;
     }
@@ -81,9 +85,10 @@ public class OrdenPinturaDetalleDP {
                 + "AND (COLORH = {COLOR}));";
         sql = sql.replace("{PERFIL}", idPerfil);
         sql = sql.replace("{COLOR}", Integer.toString(idColor));
-        ResultSet rs = ComunDP.getData(sql);
-        if (rs != null && rs.next()) {
-            return rs.getInt(1);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            if (rs != null && rs.next()) {
+                return rs.getInt(1);
+            }
         }
         return 0;
     }
@@ -91,19 +96,20 @@ public class OrdenPinturaDetalleDP {
     public static Set<OrdenPinturaDetalle> getOrdenPretratamiento() throws SQLException {
         Set<OrdenPinturaDetalle> orden = new HashSet<>();
         sql = "SELECT DISTINCT T.IDPERFIL, Sum(T.CANTIDAD) AS SumaDeCANTIDAD, T.LARGO "
-                + "FROM (SELECT *  FROM OPINTURA_DETALLE WHERE ((COLORH = "+
-                Integer.toString(ColorDP.ID_PRETRATADO) +") AND (STK_ACT = false)))  AS T "
+                + "FROM (SELECT *  FROM OPINTURA_DETALLE WHERE ((COLORH = "
+                + Integer.toString(ColorDP.ID_PRETRATADO) + ") AND (STK_ACT = false)))  AS T "
                 + "GROUP BY T.IDPERFIL, T.LARGO, T.IDPERFIL "
                 + "ORDER BY T.IDPERFIL;";
-        ResultSet rs = ComunDP.getData(sql);
-        while (rs.next()) {
-            OrdenPinturaDetalle detalle = new OrdenPinturaDetalle();
-            detalle.setCantidad(rs.getInt(2));
-            detalle.setIdPerfil(rs.getString(1));
-            detalle.setLargo(rs.getInt(3));
-            detalle.setColorOrigen(ColorDP.getOne(ColorDP.ID_NATURAL));
-            detalle.setColorDestino(ColorDP.getOne(ColorDP.ID_PRETRATADO));
-            orden.add(detalle);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while (rs.next()) {
+                OrdenPinturaDetalle detalle = new OrdenPinturaDetalle();
+                detalle.setCantidad(rs.getInt(2));
+                detalle.setIdPerfil(rs.getString(1));
+                detalle.setLargo(rs.getInt(3));
+                detalle.setColorOrigen(ColorDP.getOne(ColorDP.ID_NATURAL));
+                detalle.setColorDestino(ColorDP.getOne(ColorDP.ID_PRETRATADO));
+                orden.add(detalle);
+            }
         }
         return orden;
     }

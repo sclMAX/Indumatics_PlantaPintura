@@ -11,9 +11,10 @@ public class RutaDP {
     public static Ruta getOne(int id) throws SQLException {
         Ruta res = null;
         sql = "SELECT * FROM RUTAS WHERE RUTAS.ID = " + Integer.toString(id);
-        ResultSet rs = ComunDP.getData(sql);
-        if (rs.next()) {
-            res = DbToObj(rs);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            if (rs.next()) {
+                res = DbToObj(rs);
+            }
         }
         return res;
     }

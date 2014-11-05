@@ -14,9 +14,10 @@ public class RemitoDP {
         Remito res = null;
         sql = "SELECT * FROM CLIENTES_REMITOS "
                 + "WHERE CLIENTES_REMITOS.idremito = " + Integer.toString(id);
-        ResultSet rs = ComunDP.getData(sql);
-        if (rs.next()) {
-            res = DbToObj(rs);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            if (rs.next()) {
+                res = DbToObj(rs);
+            }
         }
         return res;
     }
@@ -24,9 +25,10 @@ public class RemitoDP {
     public static Set<Remito> getAll() throws SQLException {
         Set<Remito> res = new HashSet<>();
         sql = "SELECT * FROM CLIENTES_REMITOS ";
-        ResultSet rs = ComunDP.getData(sql);
-        while (rs.next()) {
-            res.add(DbToObj(rs));
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while (rs.next()) {
+                res.add(DbToObj(rs));
+            }
         }
         return res;
     }

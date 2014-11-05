@@ -14,9 +14,10 @@ public class RemitoDetalleDP {
     public static Set<RemitoDetalle> getAll() throws SQLException {
         Set<RemitoDetalle> res = new HashSet<>();
         sql = "SELECT * FROM CLIENTES_DETALLE_REMITO ";
-        ResultSet rs = ComunDP.getData(sql);
-        while (rs.next()) {
-            res.add(DbToObj(rs));
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while (rs.next()) {
+                res.add(DbToObj(rs));
+            }
         }
         return res;
     }
@@ -25,9 +26,10 @@ public class RemitoDetalleDP {
         Set<RemitoDetalle> res = new HashSet<>();
         sql = "SELECT * FROM CLIENTES_DETALLE_REMITO "
                 + " WHERE CLIENTES_DETALLE_REMITO.IDREMITO = " + Integer.toString(remito.getIdremito());
-        ResultSet rs = ComunDP.getData(sql);
-        while (rs.next()) {
-            res.add(DbToObj(rs));
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while (rs.next()) {
+                res.add(DbToObj(rs));
+            }
         }
         return res;
     }

@@ -18,8 +18,10 @@ public class ComunDP {
      * @throws SQLException
      */
     public static ResultSet getData(String sql) throws SQLException {
-        Statement st = con.createStatement();
-        ResultSet rs = st.executeQuery(sql);
+        ResultSet rs;
+        try (Statement st = con.createStatement()) {
+            rs = st.executeQuery(sql);
+        }
         return rs;
     }
 }

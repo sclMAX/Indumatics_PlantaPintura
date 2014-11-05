@@ -13,9 +13,10 @@ public class PerfilDP {
     public static Set<Perfil> getAll() throws SQLException {
         Set<Perfil> res = new HashSet<>();
         sql = "SELECT * FROM PERFILES ";
-        ResultSet rs = ComunDP.getData(sql);
-        while (rs.next()) {
-            res.add(DbToObj(rs));
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while (rs.next()) {
+                res.add(DbToObj(rs));
+            }
         }
         return res;
     }
@@ -23,9 +24,10 @@ public class PerfilDP {
     public static Perfil getOne(String id) throws SQLException {
         Perfil res = null;
         sql = "SELECT * FROM PERFILES WHERE PERFILES.IDPERF =  '" + id + "'";
-        ResultSet rs = ComunDP.getData(sql);
-        while (rs.next()) {
-            res = DbToObj(rs);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while (rs.next()) {
+                res = DbToObj(rs);
+            }
         }
         return res;
     }

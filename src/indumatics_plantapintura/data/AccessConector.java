@@ -23,11 +23,11 @@ public class AccessConector {
     private static synchronized void createInstance() {
         if (instance == null) {
             instance = new AccessConector();
-            con = conectar();
+            conectar();
         }
     }
 
-    private static Connection conectar() {
+    private static void conectar() {
         try {
             String controlador = "sun.jdbc.odbc.JdbcOdbcDriver";
             Class.forName(controlador).newInstance();
@@ -35,10 +35,9 @@ public class AccessConector {
             Utils.showError("ERROR...", "Error al cargar el Controlador.\n ERROR:" + e.getMessage());
         }
         try {
-            return DriverManager.getConnection(DSN, user, password);
+            con = DriverManager.getConnection(DSN, user, password);
         } catch (Exception e) {
-             Utils.showError("ERROR...", "Error al realizar la conexion.\n ERROR:" + e.getMessage());
-            return null;
+            Utils.showError("ERROR...", "Error al realizar la conexion.\n ERROR:" + e.getMessage());
         }
     }
 
@@ -53,7 +52,8 @@ public class AccessConector {
         int pk = -1;
         if (instance != null) {
             String sql = "SELECT @@IDENTITY";
-            try (Statement statement = con.createStatement(); ResultSet rs = statement.executeQuery(sql)) {
+            try (Statement statement = con.createStatement();
+                    ResultSet rs = statement.executeQuery(sql)) {
                 while (rs.next()) {
                     pk = rs.getInt(1);
                 }

@@ -16,9 +16,10 @@ public class ColorDP {
         Color res = null;
         sql = "SELECT * FROM Colores "
                 + "WHERE Colores.id = " + Integer.toString(id) + " ;";
-        ResultSet rs = ComunDP.getData(sql);
-        if (rs.next()) {
-            res = DbToObj(rs);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            if (rs.next()) {
+                res = DbToObj(rs);
+            }
         }
         return res;
     }
@@ -26,9 +27,10 @@ public class ColorDP {
     public static Set<Color> getAll() throws SQLException{
         Set<Color> res = new HashSet<>();
         sql = "SELECT * FROM COLORES;";
-        ResultSet rs = ComunDP.getData(sql);
-        while(rs.next()){
-            res.add(DbToObj(rs));
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            while(rs.next()){
+                res.add(DbToObj(rs));
+            }
         }
         return res;
     }

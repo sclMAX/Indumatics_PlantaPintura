@@ -11,9 +11,10 @@ public class ClienteDP {
     public static Cliente getOne(int id) throws SQLException {
         Cliente res = null;
         sql = "SELECT * FROM Clientes WHERE Clientes.idcliente = " + Integer.toString(id);
-        ResultSet rs = ComunDP.getData(sql);
-        if (rs.next()) {
-            res = DbToObj(rs);
+        try (ResultSet rs = ComunDP.getData(sql)) {
+            if (rs.next()) {
+                res = DbToObj(rs);
+            }
         }
         return res;
     }

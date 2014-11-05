@@ -27,12 +27,13 @@ public class PedidosData {
                     + "(CLIENTES_REMITOS.TIPODOC)=4) AND "
                     + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
                     + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False));";
-            ResultSet rs = ComunDP.getData(sql);
-            if (rs != null) {
-                while (rs.next()) {
-                    Color color = ColorDP.getOne(rs.getInt("COLOR"));
-                    if (color != null) {
-                        res.add(color);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        Color color = ColorDP.getOne(rs.getInt("COLOR"));
+                        if (color != null) {
+                            res.add(color);
+                        }
                     }
                 }
             }
@@ -64,12 +65,13 @@ public class PedidosData {
             
             subSql = "CLIENTES_REMITOS.IDCLIENTE IN (" + subSql+")";
             sql = sql.replace("{CLIENTES}", subSql);
-            ResultSet rs = ComunDP.getData(sql);
-            if (rs != null) {
-                while (rs.next()) {
-                    Color color = ColorDP.getOne(rs.getInt("COLOR"));
-                    if (color != null) {
-                        res.add(color);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        Color color = ColorDP.getOne(rs.getInt("COLOR"));
+                        if (color != null) {
+                            res.add(color);
+                        }
                     }
                 }
             }
@@ -89,12 +91,13 @@ public class PedidosData {
                     + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or (CLIENTES_REMITOS.TIPODOC)=4) AND "
                     + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
                     + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False));";
-            ResultSet rs = ComunDP.getData(sql);
-            if (rs != null) {
-                while (rs.next()) {
-                    Cliente cliente = ClienteDP.getOne(rs.getInt("IDCLIENTE"));
-                    if (cliente != null) {
-                        l.add(cliente);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        Cliente cliente = ClienteDP.getOne(rs.getInt("IDCLIENTE"));
+                        if (cliente != null) {
+                            l.add(cliente);
+                        }
                     }
                 }
             }
@@ -115,12 +118,13 @@ public class PedidosData {
                     + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
                     + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False) AND (CLIENTES_DETALLE_REMITO.COLOR = "
                     + Integer.toString(color.getId()) + "));";
-            ResultSet rs = ComunDP.getData(sql);
-            if (rs != null) {
-                while (rs.next()) {
-                    Cliente cliente = ClienteDP.getOne(rs.getInt("IDCLIENTE"));
-                    if (cliente != null) {
-                        res.add(cliente);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        Cliente cliente = ClienteDP.getOne(rs.getInt("IDCLIENTE"));
+                        if (cliente != null) {
+                            res.add(cliente);
+                        }
                     }
                 }
             }
@@ -148,12 +152,13 @@ public class PedidosData {
 
             sql = sql + " CLIENTES_DETALLE_REMITO.COLOR IN (" + tmp + ")";
             sql = sql + "));";
-            ResultSet rs = ComunDP.getData(sql);
-            if (rs != null) {
-                while (rs.next()) {
-                    Cliente cliente = ClienteDP.getOne(rs.getInt("IDCLIENTE"));
-                    if (cliente != null) {
-                        l.add(cliente);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        Cliente cliente = ClienteDP.getOne(rs.getInt("IDCLIENTE"));
+                        if (cliente != null) {
+                            l.add(cliente);
+                        }
                     }
                 }
             }
@@ -187,12 +192,13 @@ public class PedidosData {
             tmp = tmp.substring(0, tmp.length() - 2);
             sql = sql + "CLIENTES_REMITOS.IDCLIENTE IN (" + tmp + ")";
             sql = sql + "));";
-            ResultSet rs = ComunDP.getData(sql);
-            if (rs != null) {
-                while (rs.next()) {
-                    Remito pedido = RemitoDP.getOne(rs.getInt("PEDIDO"));
-                    if (pedido != null) {
-                        res.add(pedido);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        Remito pedido = RemitoDP.getOne(rs.getInt("PEDIDO"));
+                        if (pedido != null) {
+                            res.add(pedido);
+                        }
                     }
                 }
             }
@@ -238,16 +244,17 @@ public class PedidosData {
                     + "GROUP BY T.IDPERFIL, T.LARGO "
                     + "ORDER BY T.IDPERFIL; ";
             Color pretratado = ColorDP.getOne(ColorDP.ID_PRETRATADO);
-            ResultSet rs = ComunDP.getData(sql);
-            if (rs != null) {
-                while (rs.next()) {
-                    OrdenPinturaDetalle detalle = new OrdenPinturaDetalle();
-                    detalle.setCantidad(rs.getInt("CANTIDAD"));
-                    detalle.setIdPerfil(rs.getString("IDPERFIL"));
-                    detalle.setLargo(rs.getInt("LARGO"));
-                    detalle.setColorOrigen(pretratado);
-                    detalle.setColorDestino(color);
-                    orden.add(detalle);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        OrdenPinturaDetalle detalle = new OrdenPinturaDetalle();
+                        detalle.setCantidad(rs.getInt("CANTIDAD"));
+                        detalle.setIdPerfil(rs.getString("IDPERFIL"));
+                        detalle.setLargo(rs.getInt("LARGO"));
+                        detalle.setColorOrigen(pretratado);
+                        detalle.setColorDestino(color);
+                        orden.add(detalle);
+                    }
                 }
             }
         } catch (SQLException ex) {
