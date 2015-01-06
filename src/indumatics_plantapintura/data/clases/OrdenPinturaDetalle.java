@@ -1,5 +1,6 @@
 package indumatics_plantapintura.data.clases;
 
+import indumatics_plantapintura.data.AccessConector;
 import indumatics_plantapintura.data.Utils;
 import indumatics_plantapintura.data.providers.ColorDP;
 import indumatics_plantapintura.data.providers.OrdenPinturaDetalleDP;
@@ -36,7 +37,7 @@ public class OrdenPinturaDetalle {
     private int stockNatural = dfv;
     private int pedidosNatural = dfv;
 
-    private static final int dfv = -1000;
+    private static final int dfv = 0;
 
     public OrdenPinturaDetalle(int id, int idOrden, int cantidad, String idPerfil, int colorH, int colorD) {
         this.id = id;
@@ -81,7 +82,14 @@ public class OrdenPinturaDetalle {
     public void setIdPerfil(String idPerfil) {
         this.idPerfil = idPerfil;
         try {
-            this.perfil = PerfilDP.getOne(idPerfil);
+            Perfil p = PerfilDP.getOne(idPerfil);
+            if (p != null) {
+                this.perfil = p;
+                this.stockTotal = StockDP.getStockTotalPerfil(perfil);
+                this.stockDisponible = StockDP.getStockDisponiblePerfil(perfil);
+                this.stockNatural = StockDP.getStockPerfilColor(perfil, new Color(ColorDP.ID_NATURAL));
+                this.pedidosNatural = StockDP.getPedidosNatural(perfil);
+            }
         } catch (SQLException ex) {
             Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -94,7 +102,12 @@ public class OrdenPinturaDetalle {
     public void setColorO(int colorO) {
         this.colorO = colorO;
         try {
-            this.colorOrigen = ColorDP.getOne(colorO);
+            Color c = ColorDP.getOne(colorO);
+            if ((perfil != null) && (c != null)) {
+                this.colorOrigen = c;
+                this.stockColorOrigen = StockDP.getStockPerfilColor(perfil, c);
+                this.enProcesoColorOrigen = OrdenPinturaDetalleDP.getProcesoOrigen(perfil.getIdperf(), c.getId());
+            }
         } catch (SQLException ex) {
             Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -108,7 +121,12 @@ public class OrdenPinturaDetalle {
     public void setColorD(int colorD) {
         this.colorD = colorD;
         try {
-            this.colorDestino = ColorDP.getOne(colorD);
+            Color c = ColorDP.getOne(colorD);
+            if ((perfil != null) && (c != null)) {
+                this.colorDestino = c;
+                this.stockColorDestino = StockDP.getStockPerfilColor(perfil, c);
+                this.enProcesoColorDestino = OrdenPinturaDetalleDP.getProcesoDestino(perfil.getIdperf(), c.getId());
+            }
         } catch (SQLException ex) {
             Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -177,7 +195,7 @@ public class OrdenPinturaDetalle {
 
     public void setColorOrigen(Color colorOrigen) {
         this.colorOrigen = colorOrigen;
-        this.colorO = colorOrigen.getId();
+        setColorO(colorOrigen.getId());
     }
 
     public Color getColorDestino() {
@@ -186,119 +204,56 @@ public class OrdenPinturaDetalle {
 
     public void setColorDestino(Color colorDestino) {
         this.colorDestino = colorDestino;
-        this.colorD = colorDestino.getId();
+        setColorD(colorDestino.getId());
     }
 
     public int getStockTotal() {
-        if (stockTotal != dfv) {
-            return stockTotal;
-        }
-        try {
-            return StockDP.getStockTotalPerfil(perfil);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
+        return stockTotal;
     }
 
     public int getStockDisponible() {
-        if (stockDisponible != dfv) {
-            return stockDisponible;
-        }
-        try {
-            return StockDP.getStockDisponiblePerfil(perfil);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
-    }
-
-    public int getStockColorOrigen() {
-        if (stockColorOrigen != dfv) {
-            return stockColorOrigen;
-        }
-        try {
-            return StockDP.getStockPerfilColor(perfil, colorOrigen);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
-    }
-
-    public int getStockColorDestino() {
-        if (stockColorDestino != dfv) {
-            return stockColorDestino;
-        }
-        try {
-            return StockDP.getStockPerfilColor(perfil, colorDestino);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
-    }
-
-    public int getEnProcesoColorOrigen() {
-        if (enProcesoColorOrigen != dfv) {
-            return enProcesoColorOrigen;
-        }
-        try {
-            return OrdenPinturaDetalleDP.getProcesoOrigen(idPerfil, colorO);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
-    }
-
-    public int getEnProcesoColorDestino() {
-        if (enProcesoColorDestino != dfv) {
-            return enProcesoColorDestino;
-        }
-        try {
-            return OrdenPinturaDetalleDP.getProcesoDestino(idPerfil, colorD);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
+        return stockDisponible;
     }
 
     public int getStockNatural() {
-        if (stockNatural != dfv) {
-            return stockNatural;
-        }
-        try {
-            return StockDP.getOne(perfil, new Color(ColorDP.ID_NATURAL)).getStock();
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
+        return stockNatural;
+    }
+
+    public int getStockColorOrigen() {
+        return stockColorOrigen;
+    }
+
+    public int getEnProcesoColorOrigen() {
+        return enProcesoColorOrigen;
+    }
+
+    public int getStockColorDestino() {
+        return stockColorDestino;
+    }
+
+    public int getEnProcesoColorDestino() {
+        return enProcesoColorDestino;
     }
 
     public int getPedidosNatural() {
-        if (pedidosNatural != dfv) {
-            return pedidosNatural;
-        }
-        try {
-            return StockDP.getPedidosNatural(perfil);
-        } catch (SQLException ex) {
-            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 0;
+        return pedidosNatural;
     }
 
     public void validarCantidad() {
         try {
-            int c = 0;
-            c = (getCantidad() + StockDP.getOne(perfil, colorDestino).getMpp())
-                    - (getStockColorDestino() + getEnProcesoColorDestino());
-            if (c >= 0) {
-                setaProcesar(c);
-            } else {
-                setaProcesar(0);
+            Stock stk = StockDP.getOne(perfil, colorDestino);
+            if (stk != null) {
+                int c = 0;
+                c = (getCantidad() + stk.getMpp())
+                        - (getStockColorDestino() + getEnProcesoColorDestino());
+                if (c >= 0) {
+                    setaProcesar(c);
+                } else {
+                    setaProcesar(0);
+                }
             }
         } catch (SQLException ex) {
-            Utils.showError("ERROR...", "Error al Validar la cantidad a procesar ["
-                    + perfil.getIdperf() + "].[a Procesar].\n"
-                    + "ERROR: " + ex.getMessage() + "\n SQL State: " + ex.getSQLState());
+            Logger.getLogger(OrdenPinturaDetalle.class.getName()).log(Level.SEVERE, null, ex);
             setaProcesar(0);
         }
     }

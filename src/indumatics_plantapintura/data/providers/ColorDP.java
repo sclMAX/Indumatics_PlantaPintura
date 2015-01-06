@@ -11,24 +11,27 @@ public class ColorDP {
     private static String sql;
     public static final int ID_NATURAL = 5;
     public static final int ID_PRETRATADO = 35;
+    public static final int ID_BLANCO = 2;
 
     public static Color getOne(int id) throws SQLException {
         Color res = null;
         sql = "SELECT * FROM Colores "
                 + "WHERE Colores.id = " + Integer.toString(id) + " ;";
         try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs.next()) {
-                res = DbToObj(rs);
+            if (rs != null) {
+                if (rs.next()) {
+                    res = DbToObj(rs);
+                }
             }
         }
         return res;
     }
-    
-    public static Set<Color> getAll() throws SQLException{
+
+    public static Set<Color> getAll() throws SQLException {
         Set<Color> res = new HashSet<>();
         sql = "SELECT * FROM COLORES;";
         try (ResultSet rs = ComunDP.getData(sql)) {
-            while(rs.next()){
+            while (rs.next()) {
                 res.add(DbToObj(rs));
             }
         }

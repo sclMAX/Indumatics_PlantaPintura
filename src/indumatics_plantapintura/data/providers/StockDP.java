@@ -25,12 +25,16 @@ public class StockDP {
 
     public static Stock getOne(Perfil perfil, Color color) throws SQLException {
         Stock res = null;
-        sql = "SELECT * FROM STOCK "
-                + "WHERE (STOCK.IDPERFIL = '" + perfil.getIdperf() + "') AND ("
-                + "STOCK.COLOR = " + Integer.toString(color.getId()) + ");";
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs.next()) {
-                res = DbToObj(rs);
+        if ((perfil != null) && (color != null)) {
+            sql = "SELECT * FROM STOCK "
+                    + "WHERE (STOCK.IDPERFIL = '" + perfil.getIdperf() + "') AND ("
+                    + "STOCK.COLOR = " + Integer.toString(color.getId()) + ");";
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    if (rs.next()) {
+                        res = DbToObj(rs);
+                    }
+                }
             }
         }
         return res;
@@ -38,47 +42,57 @@ public class StockDP {
 
     public static Set<Stock> getAllPerfil(Perfil perfil) throws SQLException {
         Set<Stock> res = new HashSet<>();
-        sql = "SELECT * FROM STOCK "
-                + "WHERE (STOCK.IDPERFIL = '" + perfil.getIdperf() + "');";
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            while (rs.next()) {
-                res.add(DbToObj(rs));
+        if (perfil != null) {
+            sql = "SELECT * FROM STOCK "
+                    + "WHERE (STOCK.IDPERFIL = '" + perfil.getIdperf() + "');";
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                while (rs.next()) {
+                    res.add(DbToObj(rs));
+                }
             }
         }
         return res;
     }
 
     public static int getStockTotalPerfil(Perfil perfil) throws SQLException {
-        sql = "SELECT SUM(STOCK.STOCK) AS TOTAL FROM STOCK "
-                + "WHERE (STOCK.IDPERFIL = '" + perfil.getIdperf() + "');";
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs.next()) {
-                return rs.getInt("TOTAL");
+        if (perfil != null) {
+            sql = "SELECT SUM(STOCK.STOCK) AS TOTAL FROM STOCK "
+                    + "WHERE (STOCK.IDPERFIL = '" + perfil.getIdperf() + "');";
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs.next()) {
+                    return rs.getInt("TOTAL");
+                }
             }
         }
         return 0;
     }
 
     public static int getStockDisponiblePerfil(Perfil perfil) throws SQLException {
-        sql = "SELECT SUM(DISPONIBLE) AS TOTAL FROM STOCK_DISPONIBLE "
-                + "WHERE (STOCK_TOTALBARRAS.IDPERF = '" + perfil.getIdperf() + "');";
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs.next()) {
-                return rs.getInt("TOTAL");
+        if (perfil != null) {
+            sql = "SELECT SUM(DISPONIBLE) AS TOTAL FROM STOCK_DISPONIBLE "
+                    + "WHERE (STOCK_TOTALBARRAS.IDPERF = '" + perfil.getIdperf() + "');";
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    if (rs.next()) {
+                        return rs.getInt("TOTAL");
+                    }
+                }
             }
         }
         return 0;
     }
 
     public static int getStockPerfilColor(Perfil perfil, Color color) throws SQLException {
-        sql = "SELECT STOCK "
-                + "FROM STOCK "
-                + "WHERE (STOCK.IDPERFIL = '{PERFIL}')AND(STOCK.COLOR = {COLOR});";
-        sql = sql.replace("{PERFIL}", perfil.getIdperf());
-        sql = sql.replace("{COLOR}", Integer.toString(color.getId()));
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs.next()) {
-                return rs.getInt("STOCK");
+        if ((perfil != null) && (color != null)) {
+            sql = "SELECT STOCK "
+                    + "FROM STOCK "
+                    + "WHERE (STOCK.IDPERFIL = '{PERFIL}')AND(STOCK.COLOR = {COLOR});";
+            sql = sql.replace("{PERFIL}", perfil.getIdperf());
+            sql = sql.replace("{COLOR}", Integer.toString(color.getId()));
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs.next()) {
+                    return rs.getInt("STOCK");
+                }
             }
         }
         return 0;
@@ -86,29 +100,33 @@ public class StockDP {
 
     public static Set<Stock> getAllColor(Color color) throws SQLException {
         Set<Stock> res = new HashSet<>();
-        sql = "SELECT * FROM STOCK "
-                + "WHERE (STOCK.COLOR = '" + Integer.toString(color.getId()) + "');";
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            while (rs.next()) {
-                res.add(DbToObj(rs));
+        if (color != null) {
+            sql = "SELECT * FROM STOCK "
+                    + "WHERE (STOCK.COLOR = '" + Integer.toString(color.getId()) + "');";
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                while (rs.next()) {
+                    res.add(DbToObj(rs));
+                }
             }
         }
         return res;
     }
 
     public static int getPedidosNatural(Perfil perfil) throws SQLException {
-        sql = "SELECT SUM(CANTIDAD) "
-                + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO ON "
-                + "CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO "
-                + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or (CLIENTES_REMITOS.TIPODOC)=4) AND "
-                + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
-                + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False) AND "
-                + "(COLOR = {COLOR}) AND (IDPERFIL = '{PERFIL}' ));";
-        sql = sql.replace("{COLOR}", Integer.toString(ColorDP.ID_NATURAL));
-        sql = sql.replace("{PERFIL}", perfil.getIdperf());
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs != null && rs.next()) {
-                return rs.getInt(1);
+        if (perfil != null) {
+            sql = "SELECT SUM(CANTIDAD) "
+                    + "FROM CLIENTES_REMITOS INNER JOIN CLIENTES_DETALLE_REMITO ON "
+                    + "CLIENTES_REMITOS.IDREMITO = CLIENTES_DETALLE_REMITO.IDREMITO "
+                    + "WHERE (((CLIENTES_REMITOS.TIPODOC)=1 Or (CLIENTES_REMITOS.TIPODOC)=4) AND "
+                    + "((CLIENTES_REMITOS.ENTREGADO)=False) AND "
+                    + "((CLIENTES_DETALLE_REMITO.ACT_STOCK)=False) AND "
+                    + "(COLOR = {COLOR}) AND (IDPERFIL = '{PERFIL}' ));";
+            sql = sql.replace("{COLOR}", Integer.toString(ColorDP.ID_NATURAL));
+            sql = sql.replace("{PERFIL}", perfil.getIdperf());
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null && rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         }
         return 0;

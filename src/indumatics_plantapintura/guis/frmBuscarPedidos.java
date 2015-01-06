@@ -238,6 +238,18 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
+    
+     private void cargarListaPintarStockBlanco() {
+        try {
+            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+            frmListadoPerfilesPorColor jfOrden;
+            jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenStockBlanco());
+            jfOrden.setTitle("FALTANTES STOCK EN BLANCO");
+            jfOrden.setVisible(true);
+        } finally {
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -267,6 +279,8 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jToolBar2 = new javax.swing.JToolBar();
         jbClientesBuscar = new javax.swing.JButton();
         jbClientesQuitar = new javax.swing.JButton();
+        jSeparator3 = new javax.swing.JToolBar.Separator();
+        jbPintarStocKBlanco = new javax.swing.JButton();
         jpPedidos = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -460,6 +474,19 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
             }
         });
         jToolBar2.add(jbClientesQuitar);
+        jToolBar2.add(jSeparator3);
+
+        jbPintarStocKBlanco.setIcon(new javax.swing.ImageIcon(getClass().getResource("/indumatics_plantapintura/recursos/iconos/produccion_24x24.gif"))); // NOI18N
+        jbPintarStocKBlanco.setToolTipText(bundle.getString("PerfilesStock")); // NOI18N
+        jbPintarStocKBlanco.setFocusable(false);
+        jbPintarStocKBlanco.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jbPintarStocKBlanco.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jbPintarStocKBlanco.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jbPintarStocKBlancoActionPerformed(evt);
+            }
+        });
+        jToolBar2.add(jbPintarStocKBlanco);
 
         javax.swing.GroupLayout jpClientesLayout = new javax.swing.GroupLayout(jpClientes);
         jpClientes.setLayout(jpClientesLayout);
@@ -687,6 +714,10 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         cargarListaPerfilePretratar();
     }//GEN-LAST:event_jbPretratamientoActionPerformed
 
+    private void jbPintarStocKBlancoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPintarStocKBlancoActionPerformed
+       cargarListaPintarStockBlanco();
+    }//GEN-LAST:event_jbPintarStocKBlancoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -733,6 +764,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
+    private javax.swing.JToolBar.Separator jSeparator3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JToolBar jToolBar2;
     private javax.swing.JToolBar jToolBar3;
@@ -741,6 +773,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     private javax.swing.JButton jbColoresBuscar;
     private javax.swing.JButton jbColoresQuitar;
     private javax.swing.JButton jbLimpiarLista;
+    private javax.swing.JButton jbPintarStocKBlanco;
     private javax.swing.JButton jbPretratamiento;
     private javax.swing.JButton jbVerPerfiles_x_Color;
     private javax.swing.JPanel jpClientes;

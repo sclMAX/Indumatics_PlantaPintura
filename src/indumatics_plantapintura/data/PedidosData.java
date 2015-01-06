@@ -62,8 +62,8 @@ public class PedidosData {
                 subSql = subSql + Integer.toString(cliente.getIdcliente()) + ", ";
             }
             subSql = subSql.substring(0, subSql.length() - 2);
-            
-            subSql = "CLIENTES_REMITOS.IDCLIENTE IN (" + subSql+")";
+
+            subSql = "CLIENTES_REMITOS.IDCLIENTE IN (" + subSql + ")";
             sql = sql.replace("{CLIENTES}", subSql);
             try (ResultSet rs = ComunDP.getData(sql)) {
                 if (rs != null) {
@@ -253,6 +253,36 @@ public class PedidosData {
                         detalle.setLargo(rs.getInt("LARGO"));
                         detalle.setColorOrigen(pretratado);
                         detalle.setColorDestino(color);
+                        orden.add(detalle);
+                    }
+                }
+            }
+        } catch (SQLException ex) {
+            Utils.showError("Error...", "Error al generar orden.\nERROR: "
+                    + ex.getMessage() + "\nSQL State: " + ex.getSQLState());
+        }
+        return orden;
+    }
+
+    public static Set<OrdenPinturaDetalle> genOrdenStockBlanco() {
+        Set<OrdenPinturaDetalle> orden = new HashSet<>();
+        try {
+            sql = "SELECT PERFILES.IDPERF, Round([SumaDeSTOCK]*([PBLA]/100)) AS PINTAR, PERFILES.LARGO "
+                    + "FROM (PERFILES INNER JOIN STOCK ON PERFILES.IDPERF = STOCK.IDPERFIL) "
+                    + "INNER JOIN STOCK_TOTALBARRAS ON PERFILES.IDPERF = STOCK_TOTALBARRAS.IDPERF "
+                    + "WHERE (((STOCK.STOCK)<([STOCK_TOTALBARRAS].[SumaDeSTOCK]*([PBLA]/100))) AND "
+                    + "((STOCK.COLOR)=2) AND ((Round([SumaDeSTOCK]*([PBLA]/100)))>2));";
+            Color pretratado = ColorDP.getOne(ColorDP.ID_PRETRATADO);
+            Color blanco = ColorDP.getOne(ColorDP.ID_BLANCO);
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    while (rs.next()) {
+                        OrdenPinturaDetalle detalle = new OrdenPinturaDetalle();
+                        detalle.setCantidad(rs.getInt("PINTAR"));
+                        detalle.setIdPerfil(rs.getString("IDPERF"));
+                        detalle.setLargo(rs.getInt("LARGO"));
+                        detalle.setColorOrigen(pretratado);
+                        detalle.setColorDestino(blanco);
                         orden.add(detalle);
                     }
                 }

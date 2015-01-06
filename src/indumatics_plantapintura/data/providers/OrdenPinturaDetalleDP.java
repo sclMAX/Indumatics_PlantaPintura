@@ -62,32 +62,39 @@ public class OrdenPinturaDetalleDP {
     }
 
     public static int getProcesoDestino(String idPerfil, int idColor) throws SQLException {
-        sql = "SELECT SUM (CANTIDAD) AS EnProcesoDestino "
-                + "FROM OPINTURA_DETALLE "
-                + "WHERE ((STK_ACT = False) "
-                + "AND (IDPERFIL = '{PERFIL}' ) "
-                + "AND (COLORD = {COLOR}));";
-        sql = sql.replace("{PERFIL}", idPerfil);
-        sql = sql.replace("{COLOR}", Integer.toString(idColor));
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs != null && rs.next()) {
-                return rs.getInt(1);
+        int res = 0;
+        if (idPerfil != null) {
+            sql = "SELECT SUM (CANTIDAD) AS EnProcesoDestino "
+                    + "FROM OPINTURA_DETALLE "
+                    + "WHERE ((STK_ACT = False) "
+                    + "AND (IDPERFIL = '{PERFIL}' ) "
+                    + "AND (COLORD = {COLOR}));";
+            sql = sql.replace("{PERFIL}", idPerfil);
+            sql = sql.replace("{COLOR}", Integer.toString(idColor));
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null) {
+                    if (rs.next()) {
+                        res = rs.getInt(1);
+                    }
+                }
             }
         }
-        return 0;
+        return res;
     }
 
     public static int getProcesoOrigen(String idPerfil, int idColor) throws SQLException {
-        sql = "SELECT SUM (CANTIDAD) AS EnProcesoOrigen "
-                + "FROM OPINTURA_DETALLE "
-                + "WHERE ((STK_ACT = False) "
-                + "AND (IDPERFIL = '{PERFIL}' ) "
-                + "AND (COLORH = {COLOR}));";
-        sql = sql.replace("{PERFIL}", idPerfil);
-        sql = sql.replace("{COLOR}", Integer.toString(idColor));
-        try (ResultSet rs = ComunDP.getData(sql)) {
-            if (rs != null && rs.next()) {
-                return rs.getInt(1);
+        if (idPerfil != null) {
+            sql = "SELECT SUM (CANTIDAD) AS EnProcesoOrigen "
+                    + "FROM OPINTURA_DETALLE "
+                    + "WHERE ((STK_ACT = False) "
+                    + "AND (IDPERFIL = '{PERFIL}' ) "
+                    + "AND (COLORD = {COLOR}));";
+            sql = sql.replace("{PERFIL}", idPerfil);
+            sql = sql.replace("{COLOR}", Integer.toString(idColor));
+            try (ResultSet rs = ComunDP.getData(sql)) {
+                if (rs != null && rs.next()) {
+                    return rs.getInt(1);
+                }
             }
         }
         return 0;

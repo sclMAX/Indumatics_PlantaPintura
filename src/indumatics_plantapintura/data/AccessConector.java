@@ -5,7 +5,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import javax.swing.JOptionPane;
 
 public class AccessConector {
 
@@ -24,6 +23,16 @@ public class AccessConector {
         if (instance == null) {
             instance = new AccessConector();
             conectar();
+        }
+    }
+    
+    public static void reConectar(){
+        if (instance == null) {
+            instance = new AccessConector();
+            conectar();
+        }else{
+            con = null;
+            conectar();            
         }
     }
 
