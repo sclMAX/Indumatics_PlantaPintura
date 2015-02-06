@@ -5,7 +5,7 @@
  */
 package indumatics_plantapintura.guis;
 
-import indumatics_plantapintura.data.Espera;
+import indumatics_plantapintura.data.frmEspera;
 import indumatics_plantapintura.data.PedidosData;
 import indumatics_plantapintura.data.clases.Cliente;
 import indumatics_plantapintura.data.clases.Color;
@@ -33,6 +33,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     private Set<Cliente> clientes;
     private Set<Remito> pedidos;
     private final ListSelectionModel lsmPedidos;
+    frmListadoPerfilesPorColor jfOrden;
 
     public frmBuscarPedidos() {
         initComponents();
@@ -132,48 +133,73 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
 
     private void buscarPedidos() {
         if ((colores != null) && (clientes != null)) {
-            try {
-                Espera.Mostrar();
-                pedidos = PedidosData.getPedidosCC(colores, clientes);
-                cargarTablaPedidos(pedidos);
-            } finally {
-                Espera.Ocultar();
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    frmEspera espera = new frmEspera();
+                    try {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        pedidos = PedidosData.getPedidosCC(colores, clientes);
+                        cargarTablaPedidos(pedidos);
+                    } finally {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        espera.close();
+                    }
+                }
+            }).start();
         }
     }
 
     private void buscarClientes() {
-        try {
-            Espera.Mostrar();
-            if (colores != null) {
-                JOptionPane.showMessageDialog(null, "Se Buscaran solo clientes que "
-                        + "tengan pedidos en los colores listados.\n"
-                        + "Para buscar todos los qclientes que tengan "
-                        + "pedidos BORRE la lista de colores primero.",
-                        "Filtrado", JOptionPane.INFORMATION_MESSAGE);
-                clientes = PedidosData.getClientesPedidosColores(colores);
-            } else {
-                clientes = PedidosData.getClientesPedidos();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                frmEspera espera = null;
+                try {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    if (colores != null) {
+                        JOptionPane.showMessageDialog(null, "Se Buscaran solo clientes que "
+                                + "tengan pedidos en los colores listados.\n"
+                                + "Para buscar todos los qclientes que tengan "
+                                + "pedidos BORRE la lista de colores primero.",
+                                "Filtrado", JOptionPane.INFORMATION_MESSAGE);
+                        espera = new frmEspera();
+                        clientes = PedidosData.getClientesPedidosColores(colores);
+                    } else {
+                        espera = new frmEspera();
+                        clientes = PedidosData.getClientesPedidos();
+                    }
+                    cargarTablaClientes(clientes);
+                    pedidos = null;
+                    cargarTablaPedidos(pedidos);
+                } finally {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    if (espera != null) {
+                        espera.close();
+                    }
+                }
             }
-            cargarTablaClientes(clientes);
-            pedidos = null;
-            cargarTablaPedidos(pedidos);
-        } finally {
-            Espera.Ocultar();
-        }
+        }).start();
     }
 
     private void buscarColores() {
         if (clientes != null) {
-            try {
-                Espera.Mostrar();
-                colores = PedidosData.getColoresPedidosCliente(clientes);
-                cargarTablaColores(colores);
-                pedidos = null;
-                cargarTablaPedidos(pedidos);
-            } finally {
-                Espera.Ocultar();
-            }
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    frmEspera espera = new frmEspera();
+                    try {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        colores = PedidosData.getColoresPedidosCliente(clientes);
+                        cargarTablaColores(colores);
+                        pedidos = null;
+                        cargarTablaPedidos(pedidos);
+                    } finally {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        espera.close();
+                    }
+                }
+            }).start();
         }
     }
 
@@ -206,17 +232,24 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
 
     private void cargarListaPerfileColor() {
         if (jtColores.getSelectedRow() != -1) {
-            try {
-                setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-                Color c = (Color) jtColores.getValueAt(jtColores.getSelectedRow(), 0);
-                frmListadoPerfilesPorColor jfOrden;
-                jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenPedidosPorColor(pedidos, c));
-                jfOrden.setTitle("Perfiles pedidos en " + c.getColor());
-                jfOrden.setVisible(true);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    frmEspera espera = new frmEspera();
+                    try {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                        Color c = (Color) jtColores.getValueAt(jtColores.getSelectedRow(), 0);
+                        jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenPedidosPorColor(pedidos, c));
+                        jfOrden.setTitle("Perfiles pedidos en " + c.getColor());
+                        jfOrden.setVisible(true);
 
-            } finally {
-                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
+                    } finally {
+                        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                        espera.close();
+
+                    }
+                }
+            }).start();
         } else {
             JOptionPane.showMessageDialog(null, "Debe seleccionar un color!",
                     "Listar Perfiles...", JOptionPane.WARNING_MESSAGE);
@@ -224,31 +257,45 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     }
 
     private void cargarListaPerfilePretratar() {
-        try {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            try {
-                frmListadoPerfilesPorColor jfOrden;
-                jfOrden = new frmListadoPerfilesPorColor(OrdenPinturaDetalleDP.getOrdenPretratamiento());
-                jfOrden.setTitle("Perfiles a PRETRATAMIENTO");
-                jfOrden.setVisible(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(frmBuscarPedidos.class.getName()).log(Level.SEVERE, null, ex);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                frmEspera espera = new frmEspera();
+                try {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    try {
+                        frmListadoPerfilesPorColor jfOrden;
+                        jfOrden = new frmListadoPerfilesPorColor(OrdenPinturaDetalleDP.getOrdenPretratamiento());
+                        jfOrden.setTitle("Perfiles a PRETRATAMIENTO");
+                        jfOrden.setVisible(true);
+                    } catch (SQLException ex) {
+                        Logger.getLogger(frmBuscarPedidos.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } finally {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    espera.close();
+                }
             }
-        } finally {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
+        }).start();
     }
-    
-     private void cargarListaPintarStockBlanco() {
-        try {
-            setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-            frmListadoPerfilesPorColor jfOrden;
-            jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenStockBlanco());
-            jfOrden.setTitle("FALTANTES STOCK EN BLANCO");
-            jfOrden.setVisible(true);
-        } finally {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        }
+
+    private void cargarListaPintarStockBlanco() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                frmEspera espera = new frmEspera();
+                try {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+                    frmListadoPerfilesPorColor jfOrden;
+                    jfOrden = new frmListadoPerfilesPorColor(PedidosData.genOrdenStockBlanco());
+                    jfOrden.setTitle("FALTANTES STOCK EN BLANCO");
+                    jfOrden.setVisible(true);
+                } finally {
+                    setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+                    espera.close();
+                }
+            }
+        }).start();
     }
 
     /**
@@ -294,7 +341,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
         jtDetallePedido = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Consulta Pedido ");
+        setTitle("INDUMATICS - Gestion Planta  V1.0 by MAX");
         setAutoRequestFocus(false);
 
         jpColores.setBorder(javax.swing.BorderFactory.createTitledBorder("COLORES"));
@@ -715,7 +762,7 @@ public class frmBuscarPedidos extends javax.swing.JFrame {
     }//GEN-LAST:event_jbPretratamientoActionPerformed
 
     private void jbPintarStocKBlancoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jbPintarStocKBlancoActionPerformed
-       cargarListaPintarStockBlanco();
+        cargarListaPintarStockBlanco();
     }//GEN-LAST:event_jbPintarStocKBlancoActionPerformed
 
     /**

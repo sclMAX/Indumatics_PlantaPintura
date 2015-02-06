@@ -172,7 +172,7 @@ public class frmListadoPerfilesPorColor extends javax.swing.JFrame {
         jtTEMP = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setType(java.awt.Window.Type.POPUP);
+        setAlwaysOnTop(true);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
@@ -398,7 +398,6 @@ public class frmListadoPerfilesPorColor extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jtTEMP.setRowSelectionAllowed(true);
         jtTEMP.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         jtTEMP.getTableHeader().setReorderingAllowed(false);
         jScrollPane2.setViewportView(jtTEMP);

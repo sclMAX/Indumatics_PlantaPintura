@@ -35,7 +35,6 @@ public class jfProgressBar extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Procesando...");
         setCursor(new java.awt.Cursor(java.awt.Cursor.WAIT_CURSOR));
-        setModal(false);
         setModalityType(null);
         setResizable(false);
         setType(java.awt.Window.Type.UTILITY);
